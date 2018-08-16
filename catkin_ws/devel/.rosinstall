@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /homes/joschroeder/github/nightwatcher/catkin_ws/devel/setup.sh

@@ -1,0 +1,9 @@
+(cl:defpackage amiro_msgs-msg
+  (:use )
+  (:export
+   "<INT32MULTIARRAYSTAMPED>"
+   "INT32MULTIARRAYSTAMPED"
+   "<UINT16MULTIARRAYSTAMPED>"
+   "UINT16MULTIARRAYSTAMPED"
+  ))
+
