@@ -29,6 +29,10 @@ CATKIN_ENABLE_TESTING:BOOL=ON
 //Catkin skip testing
 CATKIN_SKIP_TESTING:BOOL=OFF
 
+//Replace the CMake install command with a custom implementation
+// using symlinks instead of copying resources
+CATKIN_SYMLINK_INSTALL:BOOL=OFF
+
 //List of ';' separated packages to build
 CATKIN_WHITELIST_PACKAGES:STRING=
 
@@ -361,6 +365,12 @@ message_runtime_DIR:PATH=/opt/ros/kinetic/share/message_runtime/cmake
 //The directory containing a CMake configuration file for nav_msgs.
 nav_msgs_DIR:PATH=/opt/ros/kinetic/share/nav_msgs/cmake
 
+//Value Computed by CMake
+navigator_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/navigator
+
+//Value Computed by CMake
+navigator_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator
+
 //The directory containing a CMake configuration file for rosconsole.
 rosconsole_DIR:PATH=/opt/ros/kinetic/share/rosconsole/cmake
 
@@ -393,6 +403,12 @@ sensor_msgs_DIR:PATH=/opt/ros/kinetic/share/sensor_msgs/cmake
 
 //The directory containing a CMake configuration file for std_msgs.
 std_msgs_DIR:PATH=/opt/ros/kinetic/share/std_msgs/cmake
+
+//Value Computed by CMake
+test_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/test
+
+//Value Computed by CMake
+test_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/test
 
 //The directory containing a CMake configuration file for xmlrpcpp.
 xmlrpcpp_DIR:PATH=/opt/ros/kinetic/share/xmlrpcpp/cmake
@@ -501,7 +517,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

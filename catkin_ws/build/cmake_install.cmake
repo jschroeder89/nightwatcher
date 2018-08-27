@@ -119,6 +119,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/gtest/cmake_install.cmake")
   include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_description/cmake_install.cmake")
   include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_gazebo/cmake_install.cmake")
+  include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/navigator/cmake_install.cmake")
+  include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/cmake_install.cmake")
   include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_msgs/cmake_install.cmake")
   include("/homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/sensor_mockup/cmake_install.cmake")
 
