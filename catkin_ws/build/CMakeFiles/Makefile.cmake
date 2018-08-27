@@ -252,6 +252,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "navigator/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/DependInfo.cmake"
   "navigator/CMakeFiles/std_msgs_generate_messages_py.dir/DependInfo.cmake"
   "navigator/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/DependInfo.cmake"
+  "test/CMakeFiles/velpub.dir/DependInfo.cmake"
   "amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/DependInfo.cmake"
   "amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/DependInfo.cmake"
   "amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/DependInfo.cmake"

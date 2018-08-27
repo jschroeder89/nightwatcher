@@ -68,10 +68,11 @@
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/list_install_components.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/install.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/rebuild_cache.dir
-/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/install/strip.dir
-/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/install/local.dir
-/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/test.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/edit_cache.dir
+/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/install/local.dir
+/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/install/strip.dir
+/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/velpub.dir
+/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/CMakeFiles/test.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_msgs/CMakeFiles/edit_cache.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_msgs/CMakeFiles/test.dir
 /homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_msgs/CMakeFiles/install/strip.dir

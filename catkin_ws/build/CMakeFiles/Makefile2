@@ -970,12 +970,12 @@ clean: navigator/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
 # Directory level rules for directory test
 
 # Convenience name for "all" pass in the directory.
-test/all:
+test/all: test/CMakeFiles/velpub.dir/all
 
 .PHONY : test/all
 
 # Convenience name for "clean" pass in the directory.
-test/clean:
+test/clean: test/CMakeFiles/velpub.dir/clean
 
 .PHONY : test/clean
 
@@ -983,6 +983,43 @@ test/clean:
 test/preinstall:
 
 .PHONY : test/preinstall
+
+#=============================================================================
+# Target rules for target test/CMakeFiles/velpub.dir
+
+# All Build rule for target.
+test/CMakeFiles/velpub.dir/all:
+	$(MAKE) -f test/CMakeFiles/velpub.dir/build.make test/CMakeFiles/velpub.dir/depend
+	$(MAKE) -f test/CMakeFiles/velpub.dir/build.make test/CMakeFiles/velpub.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/homes/joschroeder/github/nightwatcher/catkin_ws/build/CMakeFiles --progress-num=32,33 "Built target velpub"
+.PHONY : test/CMakeFiles/velpub.dir/all
+
+# Include target in all.
+all: test/CMakeFiles/velpub.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/velpub.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /homes/joschroeder/github/nightwatcher/catkin_ws/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 test/CMakeFiles/velpub.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /homes/joschroeder/github/nightwatcher/catkin_ws/build/CMakeFiles 0
+.PHONY : test/CMakeFiles/velpub.dir/rule
+
+# Convenience name for target.
+velpub: test/CMakeFiles/velpub.dir/rule
+
+.PHONY : velpub
+
+# clean rule for target.
+test/CMakeFiles/velpub.dir/clean:
+	$(MAKE) -f test/CMakeFiles/velpub.dir/build.make test/CMakeFiles/velpub.dir/clean
+.PHONY : test/CMakeFiles/velpub.dir/clean
+
+# clean rule for target.
+clean: test/CMakeFiles/velpub.dir/clean
+
+.PHONY : clean
 
 #=============================================================================
 # Directory level rules for directory amiro_robot/amiro_msgs
