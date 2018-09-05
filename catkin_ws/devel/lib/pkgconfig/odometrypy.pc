@@ -1,0 +1,8 @@
+prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/devel
+
+Name: odometrypy
+Description: Description of odometrypy
+Version: 0.0.0
+Cflags: 
+Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib 
+Requires: 

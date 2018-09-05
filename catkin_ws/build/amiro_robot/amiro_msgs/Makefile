@@ -56,39 +56,6 @@ CMAKE_BINARY_DIR = /homes/joschroeder/github/nightwatcher/catkin_ws/build
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-
-.PHONY : test/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: install/strip
-
-.PHONY : install/strip/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -110,6 +77,17 @@ list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
 
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
@@ -122,6 +100,17 @@ install/fast: preinstall/fast
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: install/strip
+
+.PHONY : install/strip/fast
+
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -132,6 +121,17 @@ install/local: preinstall
 install/local/fast: install/local
 
 .PHONY : install/local/fast
+
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+
+.PHONY : test/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -166,36 +166,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
-
-# Convenience name for target.
-amiro_msgs_genpy: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
-
-.PHONY : amiro_msgs_genpy
-
-# fast build rule for target.
-amiro_msgs_genpy/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/build
-.PHONY : amiro_msgs_genpy/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-amiro_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : amiro_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-amiro_msgs_generate_messages_nodejs/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/build
-.PHONY : amiro_msgs_generate_messages_nodejs/fast
-
-# Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/rule:
 	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/rule
 .PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/rule
@@ -209,126 +179,6 @@ amiro_msgs_genlisp: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/rul
 amiro_msgs_genlisp/fast:
 	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genlisp.dir/build
 .PHONY : amiro_msgs_genlisp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
-
-# Convenience name for target.
-amiro_msgs_geneus: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
-
-.PHONY : amiro_msgs_geneus
-
-# fast build rule for target.
-amiro_msgs_geneus/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/build
-.PHONY : amiro_msgs_geneus/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-amiro_msgs_generate_messages_eus: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
-
-.PHONY : amiro_msgs_generate_messages_eus
-
-# fast build rule for target.
-amiro_msgs_generate_messages_eus/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/build
-.PHONY : amiro_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
-
-# Convenience name for target.
-amiro_msgs_gencpp: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
-
-.PHONY : amiro_msgs_gencpp
-
-# fast build rule for target.
-amiro_msgs_gencpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/build
-.PHONY : amiro_msgs_gencpp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-amiro_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : amiro_msgs_generate_messages_cpp
-
-# fast build rule for target.
-amiro_msgs_generate_messages_cpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/build
-.PHONY : amiro_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-geometry_msgs_generate_messages_nodejs/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
-.PHONY : geometry_msgs_generate_messages_nodejs/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_lisp: amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_lisp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_lisp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-.PHONY : geometry_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-actionlib_msgs_generate_messages_eus: amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/rule
-
-.PHONY : actionlib_msgs_generate_messages_eus
-
-# fast build rule for target.
-actionlib_msgs_generate_messages_eus/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_eus.dir/build
-.PHONY : actionlib_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_py: amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_py
-
-# fast build rule for target.
-geometry_msgs_generate_messages_py/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-.PHONY : geometry_msgs_generate_messages_py/fast
 
 # Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/_amiro_msgs_generate_messages_check_deps_Int32MultiArrayStamped.dir/rule:
@@ -346,19 +196,94 @@ _amiro_msgs_generate_messages_check_deps_Int32MultiArrayStamped/fast:
 .PHONY : _amiro_msgs_generate_messages_check_deps_Int32MultiArrayStamped/fast
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/rule
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
 
 # Convenience name for target.
-actionlib_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/rule
+amiro_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/rule
 
-.PHONY : actionlib_msgs_generate_messages_nodejs
+.PHONY : amiro_msgs_generate_messages_cpp
 
 # fast build rule for target.
-actionlib_msgs_generate_messages_nodejs/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_nodejs.dir/build
-.PHONY : actionlib_msgs_generate_messages_nodejs/fast
+amiro_msgs_generate_messages_cpp/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_cpp.dir/build
+.PHONY : amiro_msgs_generate_messages_cpp/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
+
+# Convenience name for target.
+amiro_msgs_geneus: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/rule
+
+.PHONY : amiro_msgs_geneus
+
+# fast build rule for target.
+amiro_msgs_geneus/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_geneus.dir/build
+.PHONY : amiro_msgs_geneus/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+
+# Convenience name for target.
+sensor_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+
+.PHONY : sensor_msgs_generate_messages_cpp
+
+# fast build rule for target.
+sensor_msgs_generate_messages_cpp/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
+.PHONY : sensor_msgs_generate_messages_cpp/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
+
+# Convenience name for target.
+amiro_msgs_generate_messages: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
+
+.PHONY : amiro_msgs_generate_messages
+
+# fast build rule for target.
+amiro_msgs_generate_messages/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/build
+.PHONY : amiro_msgs_generate_messages/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
+
+# Convenience name for target.
+amiro_msgs_gencpp: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/rule
+
+.PHONY : amiro_msgs_gencpp
+
+# fast build rule for target.
+amiro_msgs_gencpp/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gencpp.dir/build
+.PHONY : amiro_msgs_gencpp/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
+
+# Convenience name for target.
+amiro_msgs_generate_messages_eus: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/rule
+
+.PHONY : amiro_msgs_generate_messages_eus
+
+# fast build rule for target.
+amiro_msgs_generate_messages_eus/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_eus.dir/build
+.PHONY : amiro_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_lisp.dir/rule:
@@ -406,21 +331,6 @@ sensor_msgs_generate_messages_eus/fast:
 .PHONY : sensor_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_cpp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_cpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-.PHONY : geometry_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule:
 	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule
 .PHONY : amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/rule
@@ -434,6 +344,21 @@ sensor_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/sensor_m
 sensor_msgs_generate_messages_nodejs/fast:
 	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_nodejs.dir/build
 .PHONY : sensor_msgs_generate_messages_nodejs/fast
+
+# Convenience name for target.
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
+
+# Convenience name for target.
+amiro_msgs_genpy: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/rule
+
+.PHONY : amiro_msgs_genpy
+
+# fast build rule for target.
+amiro_msgs_genpy/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_genpy.dir/build
+.PHONY : amiro_msgs_genpy/fast
 
 # Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_lisp.dir/rule:
@@ -451,21 +376,6 @@ amiro_msgs_generate_messages_lisp/fast:
 .PHONY : amiro_msgs_generate_messages_lisp/fast
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-nav_msgs_generate_messages_eus: amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/rule
-
-.PHONY : nav_msgs_generate_messages_eus
-
-# fast build rule for target.
-nav_msgs_generate_messages_eus/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_eus.dir/build
-.PHONY : nav_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_py.dir/rule:
 	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_py.dir/rule
 .PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_py.dir/rule
@@ -481,139 +391,19 @@ amiro_msgs_generate_messages_py/fast:
 .PHONY : amiro_msgs_generate_messages_py/fast
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/rule
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
-nav_msgs_generate_messages_lisp: amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/rule
+amiro_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/rule
 
-.PHONY : nav_msgs_generate_messages_lisp
+.PHONY : amiro_msgs_generate_messages_nodejs
 
 # fast build rule for target.
-nav_msgs_generate_messages_lisp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_lisp.dir/build
-.PHONY : nav_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-nav_msgs_generate_messages_nodejs: amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : nav_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-nav_msgs_generate_messages_nodejs/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_nodejs.dir/build
-.PHONY : nav_msgs_generate_messages_nodejs/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_eus: amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_eus
-
-# fast build rule for target.
-geometry_msgs_generate_messages_eus/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
-.PHONY : geometry_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-actionlib_msgs_generate_messages_py: amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/rule
-
-.PHONY : actionlib_msgs_generate_messages_py
-
-# fast build rule for target.
-actionlib_msgs_generate_messages_py/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_py.dir/build
-.PHONY : actionlib_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-nav_msgs_generate_messages_py: amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/rule
-
-.PHONY : nav_msgs_generate_messages_py
-
-# fast build rule for target.
-nav_msgs_generate_messages_py/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_py.dir/build
-.PHONY : nav_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-nav_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : nav_msgs_generate_messages_cpp
-
-# fast build rule for target.
-nav_msgs_generate_messages_cpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/nav_msgs_generate_messages_cpp.dir/build
-.PHONY : nav_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-actionlib_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : actionlib_msgs_generate_messages_cpp
-
-# fast build rule for target.
-actionlib_msgs_generate_messages_cpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/build
-.PHONY : actionlib_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-actionlib_msgs_generate_messages_lisp: amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : actionlib_msgs_generate_messages_lisp
-
-# fast build rule for target.
-actionlib_msgs_generate_messages_lisp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/actionlib_msgs_generate_messages_lisp.dir/build
-.PHONY : actionlib_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
-
-# Convenience name for target.
-amiro_msgs_gennodejs: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
-
-.PHONY : amiro_msgs_gennodejs
-
-# fast build rule for target.
-amiro_msgs_gennodejs/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/build
-.PHONY : amiro_msgs_gennodejs/fast
+amiro_msgs_generate_messages_nodejs/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages_nodejs.dir/build
+.PHONY : amiro_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 amiro_robot/amiro_msgs/CMakeFiles/_amiro_msgs_generate_messages_check_deps_UInt16MultiArrayStamped.dir/rule:
@@ -631,34 +421,19 @@ _amiro_msgs_generate_messages_check_deps_UInt16MultiArrayStamped/fast:
 .PHONY : _amiro_msgs_generate_messages_check_deps_UInt16MultiArrayStamped/fast
 
 # Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
+.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
 
 # Convenience name for target.
-sensor_msgs_generate_messages_cpp: amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/rule
+amiro_msgs_gennodejs: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/rule
 
-.PHONY : sensor_msgs_generate_messages_cpp
+.PHONY : amiro_msgs_gennodejs
 
 # fast build rule for target.
-sensor_msgs_generate_messages_cpp/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/sensor_msgs_generate_messages_cpp.dir/build
-.PHONY : sensor_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
-.PHONY : amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
-
-# Convenience name for target.
-amiro_msgs_generate_messages: amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/rule
-
-.PHONY : amiro_msgs_generate_messages
-
-# fast build rule for target.
-amiro_msgs_generate_messages/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_generate_messages.dir/build
-.PHONY : amiro_msgs_generate_messages/fast
+amiro_msgs_gennodejs/fast:
+	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/build.make amiro_robot/amiro_msgs/CMakeFiles/amiro_msgs_gennodejs.dir/build
+.PHONY : amiro_msgs_gennodejs/fast
 
 # Help Target
 help:
@@ -666,46 +441,31 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
-	@echo "... test"
-	@echo "... install/strip"
-	@echo "... amiro_msgs_genpy"
-	@echo "... amiro_msgs_generate_messages_nodejs"
 	@echo "... amiro_msgs_genlisp"
-	@echo "... amiro_msgs_geneus"
-	@echo "... amiro_msgs_generate_messages_eus"
-	@echo "... amiro_msgs_gencpp"
+	@echo "... _amiro_msgs_generate_messages_check_deps_Int32MultiArrayStamped"
 	@echo "... rebuild_cache"
 	@echo "... amiro_msgs_generate_messages_cpp"
-	@echo "... geometry_msgs_generate_messages_nodejs"
-	@echo "... geometry_msgs_generate_messages_lisp"
-	@echo "... actionlib_msgs_generate_messages_eus"
-	@echo "... geometry_msgs_generate_messages_py"
-	@echo "... _amiro_msgs_generate_messages_check_deps_Int32MultiArrayStamped"
-	@echo "... actionlib_msgs_generate_messages_nodejs"
+	@echo "... amiro_msgs_geneus"
+	@echo "... sensor_msgs_generate_messages_cpp"
+	@echo "... amiro_msgs_generate_messages"
+	@echo "... amiro_msgs_gencpp"
+	@echo "... amiro_msgs_generate_messages_eus"
 	@echo "... sensor_msgs_generate_messages_lisp"
 	@echo "... sensor_msgs_generate_messages_py"
 	@echo "... list_install_components"
 	@echo "... sensor_msgs_generate_messages_eus"
-	@echo "... geometry_msgs_generate_messages_cpp"
 	@echo "... sensor_msgs_generate_messages_nodejs"
+	@echo "... amiro_msgs_genpy"
+	@echo "... edit_cache"
 	@echo "... amiro_msgs_generate_messages_lisp"
-	@echo "... nav_msgs_generate_messages_eus"
 	@echo "... install"
 	@echo "... amiro_msgs_generate_messages_py"
-	@echo "... nav_msgs_generate_messages_lisp"
-	@echo "... nav_msgs_generate_messages_nodejs"
-	@echo "... geometry_msgs_generate_messages_eus"
-	@echo "... actionlib_msgs_generate_messages_py"
-	@echo "... install/local"
-	@echo "... nav_msgs_generate_messages_py"
-	@echo "... nav_msgs_generate_messages_cpp"
-	@echo "... actionlib_msgs_generate_messages_cpp"
-	@echo "... actionlib_msgs_generate_messages_lisp"
-	@echo "... amiro_msgs_gennodejs"
+	@echo "... amiro_msgs_generate_messages_nodejs"
+	@echo "... install/strip"
 	@echo "... _amiro_msgs_generate_messages_check_deps_UInt16MultiArrayStamped"
-	@echo "... sensor_msgs_generate_messages_cpp"
-	@echo "... amiro_msgs_generate_messages"
+	@echo "... amiro_msgs_gennodejs"
+	@echo "... install/local"
+	@echo "... test"
 .PHONY : help
 
 

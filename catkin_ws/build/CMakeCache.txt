@@ -371,6 +371,24 @@ navigator_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/bui
 //Value Computed by CMake
 navigator_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator
 
+//Value Computed by CMake
+odometrypy_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/odometrypy
+
+//Value Computed by CMake
+odometrypy_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/odometrypy
+
+//Value Computed by CMake
+odopy_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/odopy
+
+//Value Computed by CMake
+odopy_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/odopy
+
+//Value Computed by CMake
+odotest_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/odometry
+
+//Value Computed by CMake
+odotest_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/odometry
+
 //The directory containing a CMake configuration file for rosconsole.
 rosconsole_DIR:PATH=/opt/ros/kinetic/share/rosconsole/cmake
 
@@ -517,7 +535,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=11
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
