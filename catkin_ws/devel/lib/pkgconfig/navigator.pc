@@ -5,4 +5,4 @@ Description: Description of navigator
 Version: 0.0.0
 Cflags: 
 Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib 
-Requires: 
+Requires: roscpp rospy std_msgs amiro_msgs

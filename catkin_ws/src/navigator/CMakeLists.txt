@@ -10,7 +10,11 @@ project(navigator)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  sensor_msgs
   std_msgs
+  nav_msgs
+  amiro_msgs
+  message_filters
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES navigator
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs amiro_msgs
 #  DEPENDS system_lib
 )
 
@@ -197,3 +201,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(nav src/nav.cpp)
+target_link_libraries(nav ${catkin_LIBRARIES})

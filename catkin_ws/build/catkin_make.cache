@@ -1,2 +1,2 @@
-amiro_robot/amiro_description:amiro_robot/amiro_gazebo:amiro_robot/amiro_msgs:amiro_robot/sensor_mockup:navigator:odometry:odometrypy:test
+amiro_robot/amiro_description:amiro_robot/amiro_gazebo:amiro_robot/amiro_msgs:amiro_robot/sensor_mockup:navigator:odometry:test:testsub
 -DCATKIN_DEVEL_PREFIX=/homes/joschroeder/github/nightwatcher/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/homes/joschroeder/github/nightwatcher/catkin_ws/install -G Unix Makefiles

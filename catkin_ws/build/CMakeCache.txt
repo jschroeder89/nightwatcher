@@ -428,6 +428,12 @@ test_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/te
 //Value Computed by CMake
 test_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/test
 
+//Value Computed by CMake
+testsub_BINARY_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/build/testsub
+
+//Value Computed by CMake
+testsub_SOURCE_DIR:STATIC=/homes/joschroeder/github/nightwatcher/catkin_ws/src/testsub
+
 //The directory containing a CMake configuration file for xmlrpcpp.
 xmlrpcpp_DIR:PATH=/opt/ros/kinetic/share/xmlrpcpp/cmake
 

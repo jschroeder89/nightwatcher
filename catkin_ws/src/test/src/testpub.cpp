@@ -15,7 +15,6 @@ int main(int argc, char **argv) {
     while(ros::ok()){
         msg.linear.x = 0.005;
         pub.publish(msg);
-        ROS_INFO("%f", msg.linear.x);
         ros::spinOnce();
         loop_rate.sleep();
     }

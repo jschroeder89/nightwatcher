@@ -2,29 +2,17 @@
 #include "nav_msgs/Odometry.h"
 #include <geometry_msgs/Twist.h>
 
-
+void odomCallback(const nav_msgs::Odometry& msg) {
+    ROS_INFO("x:[%f]\n y:[%f]\n theta:[%f]\n", msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.orientation.x);
+}
 
 main(int argc, char **argv) {
-    ros::init(argc, argv, "odotest");
+    ros::init(argc, argv, "odometry");
 
     ros::NodeHandle nh;
 
-    ros::Publisher od = nh.advertise<nav_msgs::Odometry>("amiro1/odom", 1000);
-    //ros::Publisher nav = nh.advertise<geometry_msgs::Twist>("amiro1/cmd_vel", 1000);
-
-    ros::Rate loop_rate(10);
-
-    //geomtery_msgs::Twist vel_msg;
-    nav_msgs::Odometry odo_msg;
-    odo_msg.pose.pose.position.x = 0.1;
-    while(ros::ok()) {
-        //vel_mgs.linear.x = 0.1;
-        //nav.pubilsh(vel_mgs);
-        //od.publish(odo_msg.pose.pose.position.x);
-        //ROS_INFO("%f", odo_msg.pose.pose.position.x);
-        ros::spinOnce();
-        loop_rate.sleep();
-    }
-
+    ros::Subscriber sub = nh.subscribe("amiro1/odom", 1000, odomCallback);
+    ros::spin();
+    
     return 0;
 }
