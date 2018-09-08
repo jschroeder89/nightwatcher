@@ -1,8 +1,8 @@
-prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/devel
+prefix=/home/johann/github/nightwatcher/catkin_ws/devel
 
 Name: amiro_msgs
 Description: Description of amiro_msgs
 Version: 0.0.0
-Cflags: -I/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include
-Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib 
+Cflags: -I/home/johann/github/nightwatcher/catkin_ws/devel/include
+Libs: -L/home/johann/github/nightwatcher/catkin_ws/devel/lib 
 Requires: roscpp rospy sensor_msgs std_msgs nav_msgs message_runtime

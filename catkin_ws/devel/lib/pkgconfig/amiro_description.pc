@@ -1,8 +1,8 @@
-prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/devel
+prefix=/home/johann/github/nightwatcher/catkin_ws/devel
 
 Name: amiro_description
 Description: Description of amiro_description
 Version: 0.0.0
 Cflags: 
-Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib 
+Libs: -L/home/johann/github/nightwatcher/catkin_ws/devel/lib 
 Requires: 

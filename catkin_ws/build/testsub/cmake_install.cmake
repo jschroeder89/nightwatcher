@@ -1,8 +1,8 @@
-# Install script for directory: /homes/joschroeder/github/nightwatcher/catkin_ws/src/testsub
+# Install script for directory: /home/johann/github/nightwatcher/catkin_ws/src/testsub
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/homes/joschroeder/github/nightwatcher/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/home/johann/github/nightwatcher/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsub.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsub.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/testsub/cmake" TYPE FILE FILES
-    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsubConfig.cmake"
-    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsubConfig-version.cmake"
+    "/home/johann/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsubConfig.cmake"
+    "/home/johann/github/nightwatcher/catkin_ws/build/testsub/catkin_generated/installspace/testsubConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/testsub" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/src/testsub/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/testsub" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/src/testsub/package.xml")
 endif()
 

@@ -1,8 +1,0 @@
-prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/install
-
-Name: odopy
-Description: Description of odopy
-Version: 0.0.0
-Cflags: 
-Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/install/lib 
-Requires: 

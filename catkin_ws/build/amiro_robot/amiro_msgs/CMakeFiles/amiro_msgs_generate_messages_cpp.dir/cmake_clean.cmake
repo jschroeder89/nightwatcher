@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/amiro_msgs_generate_messages_cpp"
-  "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include/amiro_msgs/UInt16MultiArrayStamped.h"
-  "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include/amiro_msgs/Int32MultiArrayStamped.h"
+  "/home/johann/github/nightwatcher/catkin_ws/devel/include/amiro_msgs/Int32MultiArrayStamped.h"
+  "/home/johann/github/nightwatcher/catkin_ws/devel/include/amiro_msgs/UInt16MultiArrayStamped.h"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,8 +1,8 @@
-prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/devel
+prefix=/home/johann/github/nightwatcher/catkin_ws/devel
 
 Name: testsub
 Description: Description of testsub
 Version: 0.0.0
 Cflags: 
-Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib 
+Libs: -L/home/johann/github/nightwatcher/catkin_ws/devel/lib 
 Requires: 

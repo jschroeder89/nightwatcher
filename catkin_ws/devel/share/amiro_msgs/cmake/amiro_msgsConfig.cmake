@@ -67,14 +67,14 @@ set(amiro_msgs_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("TRUE" STREQUAL "TRUE")
-  set(amiro_msgs_SOURCE_PREFIX /homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs)
-  set(amiro_msgs_DEVEL_PREFIX /homes/joschroeder/github/nightwatcher/catkin_ws/devel)
+  set(amiro_msgs_SOURCE_PREFIX /home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs)
+  set(amiro_msgs_DEVEL_PREFIX /home/johann/github/nightwatcher/catkin_ws/devel)
   set(amiro_msgs_INSTALL_PREFIX "")
   set(amiro_msgs_PREFIX ${amiro_msgs_DEVEL_PREFIX})
 else()
   set(amiro_msgs_SOURCE_PREFIX "")
   set(amiro_msgs_DEVEL_PREFIX "")
-  set(amiro_msgs_INSTALL_PREFIX /homes/joschroeder/github/nightwatcher/catkin_ws/install)
+  set(amiro_msgs_INSTALL_PREFIX /home/johann/github/nightwatcher/catkin_ws/install)
   set(amiro_msgs_PREFIX ${amiro_msgs_INSTALL_PREFIX})
 endif()
 
@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(amiro_msgs_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include " STREQUAL " ")
+if(NOT "/home/johann/github/nightwatcher/catkin_ws/devel/include " STREQUAL " ")
   set(amiro_msgs_INCLUDE_DIRS "")
-  set(_include_dirs "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include")
+  set(_include_dirs "/home/johann/github/nightwatcher/catkin_ws/devel/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -110,7 +110,7 @@ if(NOT "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include " STREQUA
         message(FATAL_ERROR "Project 'amiro_msgs' specifies '${idir}' as an include dir, which is not found.  It does not exist in '${include}'.  ${_report}")
       endif()
     else()
-      message(FATAL_ERROR "Project 'amiro_msgs' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/${idir}'.  ${_report}")
+      message(FATAL_ERROR "Project 'amiro_msgs' specifies '${idir}' as an include dir, which is not found.  It does neither exist as an absolute directory nor in '/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/${idir}'.  ${_report}")
     endif()
     _list_append_unique(amiro_msgs_INCLUDE_DIRS ${include})
   endforeach()
@@ -129,7 +129,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib;/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/johann/github/nightwatcher/catkin_ws/devel/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

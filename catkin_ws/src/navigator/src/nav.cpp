@@ -6,17 +6,28 @@
 #include "std_msgs/UInt16MultiArray.h"
 
 
+
+struct roboData {
+    float odometry_positions[2];
+    float odometry_orientation;
+    float traveled_distance[2];
+    std_msgs::UInt16MultiArray floor_values;
+};
+
+roboData data;
 ros::Publisher pub;
-int floor_values[4];
 
 
 void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg) {
-    
+    data.floor_values.data = msg.array.data;
     for(size_t i = 0; i < 3; i++) {
-        floor_values[i] = msg.array.data[i];    
-        ROS_INFO("%d", floor_values[i]);
+        ROS_INFO("%d", data.floor_values.data[i]);
     }
     
+}
+
+void odometryDataCallback(const nav_msgs::Odometry& msg) {
+
 }
 
 main(int argc, char **argv) {
@@ -25,6 +36,7 @@ main(int argc, char **argv) {
     ros::NodeHandle n;
     pub = n.advertise<geometry_msgs::Twist>("amiro1/cmd_vel", 1);
     ros::Subscriber floorProximity_sub = n.subscribe("amiro1/proximity_floor/values", 10, floorProximityCallback);
+    ros::Subscriber odometry_sub = n.subscribe("amiro1/odom", 10, odometryDataCallback);
     ros::Rate loop_rate(50);
 
     geometry_msgs::Twist msg;

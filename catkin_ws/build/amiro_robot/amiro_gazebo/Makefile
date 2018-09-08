@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /homes/joschroeder/github/nightwatcher/catkin_ws/src
+CMAKE_SOURCE_DIR = /home/johann/github/nightwatcher/catkin_ws/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /homes/joschroeder/github/nightwatcher/catkin_ws/build
+CMAKE_BINARY_DIR = /home/johann/github/nightwatcher/catkin_ws/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -124,8 +124,8 @@ test/fast: test
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -135,14 +135,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /homes/joschroeder/github/nightwatcher/catkin_ws/build/CMakeFiles /homes/joschroeder/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_gazebo/CMakeFiles/progress.marks
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /homes/joschroeder/github/nightwatcher/catkin_ws/build/CMakeFiles 0
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/johann/github/nightwatcher/catkin_ws/build/CMakeFiles /home/johann/github/nightwatcher/catkin_ws/build/amiro_robot/amiro_gazebo/CMakeFiles/progress.marks
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/johann/github/nightwatcher/catkin_ws/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/clean
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/clean
 .PHONY : clean
 
 # The main clean target
@@ -152,17 +152,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/preinstall
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/preinstall
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 amiro_robot/amiro_gazebo/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -189,6 +189,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /homes/joschroeder/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/johann/github/nightwatcher/catkin_ws/build && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
