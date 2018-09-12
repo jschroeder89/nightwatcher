@@ -73,7 +73,9 @@ bool accurateAngle(double dest_angle, double actual_angle) {
             return true;
         } else return false;
     } else {
-        if(())
+        if((actual_angle - dest_angle) < accuracyConst) {
+            return true;
+        } else return false;
     }
 }
 
