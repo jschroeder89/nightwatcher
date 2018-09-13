@@ -15,7 +15,8 @@
 #define Y_COORD 1
 #define X_COORD_MID_MAP 2.50
 #define Y_COORD_MID_MAP 2.50
-#define accuracyConst 1e-6
+#define accuracyConstPosition 1e-3
+#define accuracyConstAngle 1e-6
 #define rad2deg 180/M_PI
 #define deg2rad M_PI/180
 #define fast_rotate 0.5
@@ -37,7 +38,7 @@ void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg);
 void odometryDataCallback(const nav_msgs::Odometry& msg);
 double adjustOrientationForDestination(double dest_coords[]);
 double angleCorrection(double dest_angle);
-bool accurateAngle(double dest_angle, double actual_angle);
+inline bool accurateAngle(double dest_angle, double actual_angle);
 inline bool accuratePosition(double dest_coord, double actual_coord);
 inline double calculateAngle(double x_coord, double y_coord);
 inline double calculateAngleOffset(double dest_angle, double actual_angle);
@@ -67,24 +68,20 @@ void getInitPosition() {
     ROS_INFO("Initial Positions: x:[%f] y:[%f]", data.init_positions[X_COORD], data.init_positions[Y_COORD]);
 }
 
-bool accurateAngle(double dest_angle, double actual_angle) {
-    if(dest_angle <= 180) {
-        if((dest_angle - actual_angle) < accuracyConst) {
-            return true;
-        } else return false;
-    } else {
-        if((actual_angle - dest_angle) < accuracyConst) {
-            return true;
-        } else return false;
+inline bool accurateAngle(double dest_angle, double actual_angle) {
+    //ROS_INFO("%f", (dest_angle - actual_angle));
+    if (dest_angle >= 0) {
+        if((dest_angle - actual_angle) < accuracyConstAngle) return true;
     }
+    else if ((dest_angle - actual_angle) > accuracyConstAngle) return true;
+    
 }
 
 inline bool accuratePosition(double dest_coord, double actual_coord) {
-    if(std::fabs(dest_coord - actual_coord) < accuracyConst) {
+    if(std::fabs(dest_coord - actual_coord) < accuracyConstPosition) {
         return true;
     } else return false; 
 } 
-
 
 inline double calculateAngle(double x_coord, double y_coord) {
     return atan2(y_coord, x_coord); /*y goes first*/
@@ -106,14 +103,13 @@ double adjustOrientationForDestination(double dest_coords[]) {
     double position_offset_x = dest_coords[X_COORD] - data.odometry_positions[X_COORD];
     double position_offset_y = dest_coords[Y_COORD] - data.odometry_positions[Y_COORD];
     double dest_angle_deg = rad2deg * calculateAngle(position_offset_x, position_offset_y);
-    double dest_angle_deg_norm = normDestinationAngle(dest_angle_deg);
-    ROS_INFO("%f %f %f", position_offset_x, position_offset_y, dest_angle_deg_norm);
-    if(dest_angle_deg_norm <= 180) {
-        msg.angular.z = slow_rotate;
-    } else msg.angular.z = -slow_rotate;
+    ROS_INFO("%f %f %f", position_offset_x, position_offset_y, dest_angle_deg);
+    if(dest_angle_deg >= 0 && dest_angle_deg <=180) {
+        msg.angular.z = fast_rotate;
+    } else msg.angular.z = -fast_rotate;
     do {
         ros::spinOnce();
-        acc = accurateAngle(dest_angle_deg_norm, data.odometry_orientation_deg);
+        acc = accurateAngle(dest_angle_deg, data.odometry_orientation_deg);
         pub.publish(msg);
     } while(!acc && ros::ok());
     msg.angular.z = 0;
@@ -171,12 +167,13 @@ void odometryDataCallback(const nav_msgs::Odometry& msg) {
     tf::Matrix3x3 m(q);
     double r, p, y;
     m.getRPY(r, p, y);
-    if (y*rad2deg < 0) {
+    data.odometry_orientation_deg = y*rad2deg;
+    /*if (y*rad2deg < 0) {
         data.odometry_orientation_deg = 180.00 + (180.00 - std::fabs(y)*rad2deg);
-    } else data.odometry_orientation_deg = y*rad2deg;
+    } else data.odometry_orientation_deg = y*rad2deg;*/
     ROS_INFO("x: %f, y: %f, theta: %f", data.odometry_positions[X_COORD],
                                         data.odometry_positions[Y_COORD], 
-                                        data.odometry_orientation_deg);
+                                        y*rad2deg);
                                         
 }
 
@@ -195,14 +192,14 @@ main(int argc, char **argv) {
     geometry_msgs::Twist msg;
 
     getInitPosition();
-    double dest_coords[2] = {0.1, 0.1};
+    double dest_coords[2] = {1, 3};
     ros::Duration(3.0).sleep();
     //generateRandomCoords();
     //adjustOrientationForDestination(dest_coords);
     moveToCoordinates(dest_coords);
     while(ros::ok()) {
-        msg.angular.z = 0.3;
-        pub.publish(msg);
+        //msg.angular.z = 0.3;
+        //pub.publish(msg);
         ros::spinOnce();
         loop_rate.sleep();
     }
