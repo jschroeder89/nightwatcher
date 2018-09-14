@@ -6,6 +6,10 @@
 #include "std_msgs/UInt16MultiArray.h"
 #include <tf/tf.h>
 #include <math.h>
+#include "sensor_msgs/Image.h"
+#include <message_filters/subscriber.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 #define FLOOR_FRONT_RIGHT 0
 #define FLOOR_FRONT_LEFT 3
@@ -51,6 +55,7 @@ struct roboData {
     double odometry_orientation_rad;
     double odometry_orientation_deg;
     double traveled_distance[2];
+    double proximity_floor_values[4];
     double map_dimensions[4];
     std_msgs::UInt16MultiArray floor_values;
 } data;
@@ -69,12 +74,9 @@ void getInitPosition() {
 }
 
 inline bool accurateAngle(double dest_angle, double actual_angle) {
-    //ROS_INFO("%f", (dest_angle - actual_angle));
     if (dest_angle >= 0) {
         if((dest_angle - actual_angle) < accuracyConstAngle) return true;
-    }
-    else if ((dest_angle - actual_angle) > accuracyConstAngle) return true;
-    
+    } else if ((dest_angle - actual_angle) > accuracyConstAngle) return true;
 }
 
 inline bool accuratePosition(double dest_coord, double actual_coord) {
@@ -89,12 +91,6 @@ inline double calculateAngle(double x_coord, double y_coord) {
 
 inline double calculateAngleOffset(double dest_angle, double actual_angle) {
     return dest_angle - actual_angle;
-}
-
-inline double normDestinationAngle(double dest_angle) {
-    if(dest_angle < 0) {
-        return (180 + (180 - std::fabs(dest_angle))); 
-    } else return dest_angle;
 }
 
 double adjustOrientationForDestination(double dest_coords[]) {
@@ -148,13 +144,30 @@ void moveToCoordinates(double *dest_coords) {
     ros::spinOnce();
 }
 
-void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg) {
-    data.floor_values.data = msg.array.data;
-    /*ROS_INFO("\nFLOOR_FRONT_LEFT: %d \nFLOOR_RIGHT_RIGHT: %d \nFLOOR_SIDE_LEFT: %d \nFLOOR_SIDE_RIGHT: %d", 
-              data.floor_values.data[FLOOR_FRONT_LEFT],
-              data.floor_values.data[FLOOR_FRONT_RIGHT],
-              data.floor_values.data[FLOOR_SIDE_LEFT],
-              data.floor_values.data[FLOOR_SIDE_RIGHT]);*/
+void floorProximityCallback(const sensor_msgs::Image::ConstPtr msg0,
+              const sensor_msgs::Image::ConstPtr msg1,
+              const sensor_msgs::Image::ConstPtr msg2,
+              const sensor_msgs::Image::ConstPtr msg3) {
+
+const sensor_msgs::Image::ConstPtr msgs[4] = {msg0, msg1, msg2, msg3};
+
+amiro_msgs::UInt16MultiArrayStamped values;
+values.array.data.resize(size(msgs));
+values.header = msgs[0]->header;
+values.header.frame_id = "";
+
+    for (std::size_t idx = 0; idx < 4; ++idx) {
+
+    // Integrate over all pixel values to get the mean gray value
+    size_t grayIntegrated = 0;
+        for(auto it = msgs[idx]->data.begin(); it != msgs[idx]->data.end(); ++it) {
+            grayIntegrated += size_t(*it);
+        }
+    // Normalize to 0 .. 255
+    const double gray = double(grayIntegrated) / msgs[idx]->data.size();
+    data.proximity_floor_values[idx] = gray;
+    //ROS_INFO("%f", data.proximity_floor_values[idx]);
+    }
 }
 
 void odometryDataCallback(const nav_msgs::Odometry& msg) {
@@ -177,8 +190,14 @@ void odometryDataCallback(const nav_msgs::Odometry& msg) {
                                         
 }
 
-void exploration() {
+void moveToMiddleOfTheMap() {
+    double middle_of_map[2] = {X_COORD_MID_MAP, Y_COORD_MID_MAP};
+    moveToCoordinates(middle_of_map);
+}
 
+void exploration() {
+    moveToMiddleOfTheMap();
+    
 }
 
 main(int argc, char **argv) {
@@ -186,20 +205,35 @@ main(int argc, char **argv) {
     
     ros::NodeHandle n;
     pub = n.advertise<geometry_msgs::Twist>("amiro1/cmd_vel", 1);
-    ros::Subscriber floorProximity_sub = n.subscribe("amiro1/proximity_floor/values", 10, floorProximityCallback);
     ros::Subscriber odometry_sub = n.subscribe("amiro1/odom", 10, odometryDataCallback);
     ros::Rate loop_rate(50);
     geometry_msgs::Twist msg;
+    std::string topic_out, topic_in_suffix, topic_in_prefix;
+
+    n.param<std::string>("topic_in_suffix", topic_in_suffix, "/amiro1/proximity_floor_");
+    n.param<std::string>("topic_in_prefix", topic_in_prefix, "/image_raw");
+    n.param<std::string>("topic_out", topic_out, "/amiro1/proximity_floor/values");
+
+    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,sensor_msgs::Image,sensor_msgs::Image,sensor_msgs::Image> syncPolicy;
+
+    message_filters::Subscriber<sensor_msgs::Image> sub0(n, topic_in_suffix + "0" + topic_in_prefix, 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub1(n, topic_in_suffix + "1" + topic_in_prefix, 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub2(n, topic_in_suffix + "2" + topic_in_prefix, 1);
+    message_filters::Subscriber<sensor_msgs::Image> sub3(n, topic_in_suffix + "3" + topic_in_prefix, 1);
+
+    message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), sub0, sub1, sub2, sub3);
+    sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
 
     getInitPosition();
     double dest_coords[2] = {1, 3};
     ros::Duration(3.0).sleep();
     //generateRandomCoords();
     //adjustOrientationForDestination(dest_coords);
-    moveToCoordinates(dest_coords);
+    //moveToCoordinates(dest_coords);
+    
     while(ros::ok()) {
-        //msg.angular.z = 0.3;
-        //pub.publish(msg);
+        msg.linear.x = 0.1;
+        pub.publish(msg);
         ros::spinOnce();
         loop_rate.sleep();
     }
