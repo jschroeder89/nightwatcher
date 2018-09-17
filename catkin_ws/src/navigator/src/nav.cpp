@@ -19,7 +19,7 @@
 #define Y_COORD 1
 #define X_COORD_MID_MAP 2.50
 #define Y_COORD_MID_MAP 2.50
-#define accuracyConstPosition 1e-3
+#define accuracyConstPosition 0.001
 #define accuracyConstAngle 1e-6
 #define rad2deg 180/M_PI
 #define deg2rad M_PI/180
@@ -46,7 +46,7 @@ ros::Publisher pub;
 
 /*Prototypes*/
 void getInitPosition();
-void moveToCoordinates(double dest_coords, ros::NodeHandle& n);
+void moveToCoordinates(double *dest_coords);
 void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg);
 void odometryDataCallback(const nav_msgs::Odometry& msg);
 void beaconDetected();
@@ -135,7 +135,8 @@ double angleCorrection(double dest_angle) {
 
 void moveToCoordinates(double *dest_coords) {
     geometry_msgs::Twist msg;
-    double acc_x, acc_y;
+    double acc_x = 0; 
+    double acc_y = 0;
     double dest_angle_deg = adjustOrientationForDestination(dest_coords);
     //ros::Duration(0.5).sleep();
     msg.linear.x = 0.1;
@@ -147,10 +148,14 @@ void moveToCoordinates(double *dest_coords) {
         //acc_y = accuratePosition(dest_coords[Y_COORD], data.odometry_positions[Y_COORD]);
         msg.angular.z = angleCorrection(dest_angle_deg);
         //if(data.beacon_detected == true) beaconDetected();
-        ROS_INFO("dest x - x %f", std::fabs(dest_coords[X_COORD] - data.odometry_positions[X_COORD]));
-        ROS_INFO("dest y - y %f", std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]));
+        //ROS_INFO("dest x - x %f", std::fabs(dest_coords[X_COORD] - data.odometry_positions[X_COORD]));
+        //ROS_INFO("dest y - y %f", std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]));
         pub.publish(msg);
-    } while((acc_x >= accuracyConstPosition) && (acc_y >= accuracyConstPosition)); 
+        
+        //if (acc_x > accuracyConstPosition) ROS_INFO("TRUE X"); else ROS_INFO("FALSE X");
+        //if (acc_y > accuracyConstPosition) ROS_INFO("TRUE Y"); else ROS_INFO("FALSE Y");
+        if ((acc_x < accuracyConstPosition) && (acc_y < accuracyConstPosition)) break;
+    } while (true);
     msg.linear.x = 0;
     pub.publish(msg);
 }
@@ -283,7 +288,7 @@ main(int argc, char **argv) {
 
     getInitPosition();
     double dest_coords[2] = {2.5, 2.6};
-    ros::Duration(3.0).sleep();
+    //ros::Duration(3.0).sleep();
     //generateRandomCoords();
     //adjustOrientationForDestination(dest_coords);
     moveToCoordinates(dest_coords);
@@ -294,6 +299,5 @@ main(int argc, char **argv) {
         ros::spinOnce();
         loop_rate.sleep();
     }*/
-    ros::shutdown();
     return 0;
 }
