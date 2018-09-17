@@ -50,14 +50,10 @@ inline double calculateAngleOffset(double dest_angle, double actual_angle);
 
 /*Global Struct*/
 struct roboData {
+    size_t proximity_floor_values[4];
     double init_positions[2] = {NULL};
     double odometry_positions[2];
-    double odometry_orientation_rad;
     double odometry_orientation_deg;
-    double traveled_distance[2];
-    double proximity_floor_values[4];
-    double map_dimensions[4];
-    std_msgs::UInt16MultiArray floor_values;
 } data;
 
 void getInitPosition() {
@@ -166,7 +162,7 @@ values.header.frame_id = "";
     // Normalize to 0 .. 255
     const double gray = double(grayIntegrated) / msgs[idx]->data.size();
     data.proximity_floor_values[idx] = gray;
-    //ROS_INFO("%f", data.proximity_floor_values[idx]);
+    //ROS_INFO("%d", data.proximity_floor_values[idx]);
     }
 }
 
@@ -181,9 +177,6 @@ void odometryDataCallback(const nav_msgs::Odometry& msg) {
     double r, p, y;
     m.getRPY(r, p, y);
     data.odometry_orientation_deg = y*rad2deg;
-    /*if (y*rad2deg < 0) {
-        data.odometry_orientation_deg = 180.00 + (180.00 - std::fabs(y)*rad2deg);
-    } else data.odometry_orientation_deg = y*rad2deg;*/
     ROS_INFO("x: %f, y: %f, theta: %f", data.odometry_positions[X_COORD],
                                         data.odometry_positions[Y_COORD], 
                                         y*rad2deg);
@@ -195,9 +188,14 @@ void moveToMiddleOfTheMap() {
     moveToCoordinates(middle_of_map);
 }
 
+double* nextHop() {
+
+}
+
 void exploration() {
+    double last_hop[2];
     moveToMiddleOfTheMap();
-    
+    nextHop();
 }
 
 main(int argc, char **argv) {
