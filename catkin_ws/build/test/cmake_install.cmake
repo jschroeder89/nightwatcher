@@ -1,8 +1,8 @@
-# Install script for directory: /home/johann/github/nightwatcher/catkin_ws/src/test
+# Install script for directory: /homes/joschroeder/github/nightwatcher/catkin_ws/src/test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/johann/github/nightwatcher/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/homes/joschroeder/github/nightwatcher/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/test.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/test.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/test/cmake" TYPE FILE FILES
-    "/home/johann/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/testConfig.cmake"
-    "/home/johann/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/testConfig-version.cmake"
+    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/testConfig.cmake"
+    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/test/catkin_generated/installspace/testConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/test" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/src/test/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/test" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/src/test/package.xml")
 endif()
 

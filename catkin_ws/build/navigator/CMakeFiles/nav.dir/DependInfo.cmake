@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/johann/github/nightwatcher/catkin_ws/src/navigator/src/nav.cpp" "/home/johann/github/nightwatcher/catkin_ws/build/navigator/CMakeFiles/nav.dir/src/nav.cpp.o"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator/src/nav.cpp" "/homes/joschroeder/github/nightwatcher/catkin_ws/build/navigator/CMakeFiles/nav.dir/src/nav.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -17,7 +17,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/johann/github/nightwatcher/catkin_ws/devel/include"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/include"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   )

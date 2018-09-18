@@ -1,8 +1,8 @@
-prefix=/home/johann/github/nightwatcher/catkin_ws/install
+prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/install
 
 Name: navigator
 Description: Description of navigator
 Version: 0.0.0
 Cflags: 
-Libs: -L/home/johann/github/nightwatcher/catkin_ws/install/lib 
+Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/install/lib 
 Requires: roscpp rospy std_msgs amiro_msgs

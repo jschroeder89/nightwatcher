@@ -19,13 +19,13 @@
 #define Y_COORD 1
 #define X_COORD_MID_MAP 2.50
 #define Y_COORD_MID_MAP 2.50
-#define accuracyConstPosition 0.001
+#define accuracyConstPosition 0.01
 #define accuracyConstAngle 1e-6
 #define rad2deg 180/M_PI
 #define deg2rad M_PI/180
-#define fast_rotate 0.5
+#define fast_rotate 0.3
 #define slow_rotate 0.25
-#define angular_offset 1e-3
+#define angular_offset 1e-6
 #define angular_correction 0.05
 #define x_min_map 0.075
 #define x_max_map 4.925
@@ -53,7 +53,7 @@ void beaconDetected();
 
 double adjustOrientationForDestination(double dest_coords[]);
 double angleCorrection(double dest_angle);
-inline bool accurateAngle(double dest_angle, double actual_angle);
+bool accurateAngle(double dest_angle, double actual_angle);
 inline double accuratePosition(double dest_coord, double actual_coord);
 inline double calculateAngle(double x_coord, double y_coord);
 inline double calculateAngleOffset(double dest_angle, double actual_angle);
@@ -81,10 +81,16 @@ void getInitPosition() {
     ROS_INFO("Initial Positions: x:[%f] y:[%f]", data.init_positions[X_COORD], data.init_positions[Y_COORD]);
 }
 
-inline bool accurateAngle(double dest_angle, double actual_angle) {
-    if (dest_angle >= 0) {
-        if((dest_angle - actual_angle) < accuracyConstAngle) return true;
-    } else if ((dest_angle - actual_angle) > accuracyConstAngle) return true;
+bool accurateAngle(double dest_angle, double actual_angle) {
+    double acc_deg = 0;
+    if(dest_angle < 0) {
+        acc_deg = (dest_angle - actual_angle);
+        ROS_INFO("< 0 %f", acc_deg);
+        if(acc_deg > accuracyConstAngle) return true;
+    } else if(dest_angle >= 0) {
+        acc_deg = dest_angle - data.odometry_orientation_deg;
+        if(acc_deg < accuracyConstAngle) return true;
+    }
 }
 
 inline double accuratePosition(double dest_coord, double actual_coord) {
@@ -100,32 +106,43 @@ inline double calculateAngleOffset(double dest_angle, double actual_angle) {
     return dest_angle - actual_angle;
 }
 
+double rotationDirection(double dest_angle) {
+
+}
+
 double adjustOrientationForDestination(double dest_coords[]) {
     geometry_msgs::Twist msg;
-    bool acc = false;
+    bool acc_deg = false;
     double position_offset_x = dest_coords[X_COORD] - data.odometry_positions[X_COORD];
     double position_offset_y = dest_coords[Y_COORD] - data.odometry_positions[Y_COORD];
-    double dest_angle_deg = rad2deg * calculateAngle(position_offset_x, position_offset_y);
-    //ROS_INFO("dest_angle: %f", dest_angle_deg);
-    ROS_INFO("%f %f %f", position_offset_x, position_offset_y, dest_angle_deg);
-    if(dest_angle_deg >= 0 && dest_angle_deg <=180) {
-        msg.angular.z = fast_rotate;
-    } else msg.angular.z = -fast_rotate;
+    double dest_angle = rad2deg * calculateAngle(position_offset_x, position_offset_y);
+    ROS_INFO("dest_angle: %f", dest_angle);
+    //ROS_INFO("%f %f %f", position_offset_x, position_offset_y, dest_angle_deg);
+    if(dest_angle < 0) {
+        msg.angular.z = -fast_rotate;
+    } else msg.angular.z = fast_rotate;
     do {
         ros::spinOnce();
-        acc = accurateAngle(dest_angle_deg, data.odometry_orientation_deg);
+        acc_deg = accurateAngle(dest_angle, data.odometry_orientation_deg);
+        //if(dest_angle < 0) acc_deg = dest_angle + data.odometry_orientation_deg;
+        //acc_deg = dest_angle - data.odometry_orientation_deg;
+        //acc = accurateAngle(dest_angle_deg, data.odometry_orientation_deg);
+        //ROS_INFO("dest angle %f, odo_deg %f", dest_angle, data.odometry_orientation_deg);
+        //ROS_INFO("dest_angle + odo_deg %f", dest_angle + data.odometry_orientation_deg);
         pub.publish(msg);
-    } while(!acc && ros::ok());
+        if(acc_deg) break;
+    } while(true);
     msg.angular.z = 0;
     pub.publish(msg);
     ros::spinOnce();
-    return dest_angle_deg;
+    return dest_angle;
 }
 
 double angleCorrection(double dest_angle) {
     double angle_offset;
     geometry_msgs::Twist msg;
     angle_offset = calculateAngleOffset(dest_angle, data.odometry_orientation_deg);
+    //ROS_INFO("dest_angle %f | actual_angle: %f", dest_angle, data.odometry_orientation_deg);
     //ROS_INFO("angle_offset: %f", angle_offset);
     if(std::fabs(angle_offset) > angular_offset)
         if(angle_offset <= 0) {
@@ -133,30 +150,32 @@ double angleCorrection(double dest_angle) {
         } else return angular_correction; 
 }
 
+bool positionAccuracy(double acc_x, double acc_y, double dest_angle) {
+          
+}
+
 void moveToCoordinates(double *dest_coords) {
     geometry_msgs::Twist msg;
     double acc_x = 0; 
     double acc_y = 0;
-    double dest_angle_deg = adjustOrientationForDestination(dest_coords);
+    double acc_pos = 0;
+    double dest_angle = adjustOrientationForDestination(dest_coords);
     //ros::Duration(0.5).sleep();
-    msg.linear.x = 0.1;
+    msg.linear.x = 0.035;
     do {
-        ros::spinOnce();
         acc_x = std::fabs(dest_coords[X_COORD] - data.odometry_positions[X_COORD]);
         acc_y = std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]);
-        //acc_x = accuratePosition(dest_coords[X_COORD], data.odometry_positions[X_COORD]);
-        //acc_y = accuratePosition(dest_coords[Y_COORD], data.odometry_positions[Y_COORD]);
-        msg.angular.z = angleCorrection(dest_angle_deg);
+        acc_pos = (acc_x + acc_y)/2;
+        msg.angular.z = angleCorrection(dest_angle);
         //if(data.beacon_detected == true) beaconDetected();
-        //ROS_INFO("dest x - x %f", std::fabs(dest_coords[X_COORD] - data.odometry_positions[X_COORD]));
-        //ROS_INFO("dest y - y %f", std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]));
+        ros::spinOnce();
         pub.publish(msg);
-        
-        //if (acc_x > accuracyConstPosition) ROS_INFO("TRUE X"); else ROS_INFO("FALSE X");
-        //if (acc_y > accuracyConstPosition) ROS_INFO("TRUE Y"); else ROS_INFO("FALSE Y");
-        if ((acc_x < accuracyConstPosition) && (acc_y < accuracyConstPosition)) break;
+        ROS_INFO("acc_x: %f | acc_y: %f", acc_x, acc_y);
+        ROS_INFO("acc_pos: %f", acc_pos);
+        if (acc_pos < accuracyConstPosition) break;
     } while (true);
     msg.linear.x = 0;
+    msg.linear.z = 0;
     pub.publish(msg);
 }
 
@@ -231,7 +250,7 @@ void exploration() {
     last_hop_y = data.odometry_positions[Y_COORD];
 
     //moveToMiddleOfTheMap();
-    int i = 0;
+    int i = 1;
     do {  
         if(!even_step) {    
             next_hop_x = last_hop_x + (even_step_counter * amiro_base_diameter * uneven_sign);
@@ -241,10 +260,11 @@ void exploration() {
             uneven_sign *= (-1);
             next_hop_coords[X_COORD] = next_hop_x;
             next_hop_coords[Y_COORD] = next_hop_y;
+            ROS_INFO("%i HOP: %f, %f", i, next_hop_x, next_hop_y);
             moveToCoordinates(next_hop_coords);
-            ROS_INFO("%f, %f", next_hop_x, next_hop_y);
             last_hop_x = next_hop_x;
             last_hop_y = next_hop_y;
+            i++;
         } else {
             next_hop_x = last_hop_x;
             next_hop_y = last_hop_y + (even_step_counter * amiro_base_diameter * even_sign);
@@ -253,13 +273,14 @@ void exploration() {
             even_sign *= (-1);
             next_hop_coords[X_COORD] = next_hop_x;
             next_hop_coords[Y_COORD] = next_hop_y;
-            ROS_INFO("%f, %f", next_hop_x, next_hop_y);
+            ROS_INFO("%i HOP: %f, %f", i, next_hop_x, next_hop_y);
             moveToCoordinates(next_hop_coords);
             last_hop_x = next_hop_x;
             last_hop_y = next_hop_y;
+            i++;
         }
-        i++;
-    } while(i < 5);
+        
+    } while(i <= 7);
 }
 
 main(int argc, char **argv) {
@@ -287,12 +308,22 @@ main(int argc, char **argv) {
     sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
 
     getInitPosition();
-    double dest_coords[2] = {2.5, 2.6};
-    //ros::Duration(3.0).sleep();
+    double dest_coords[2] = {2.4, 2.4};
+    ros::Duration(3.0).sleep();
     //generateRandomCoords();
     //adjustOrientationForDestination(dest_coords);
-    moveToCoordinates(dest_coords);
     //exploration();
+    moveToCoordinates(dest_coords);
+    dest_coords[0] = 2.7;
+    dest_coords[1] = 2.4;
+    moveToCoordinates(dest_coords);
+    //ros::Duration(1.0).sleep();
+    /*dest_coords[0] = 2.4;
+    dest_coords[1] = 2.6;
+    moveToCoordinates(dest_coords);
+    dest_coords[0] = 2.4;
+    dest_coords[1] = 2.4;
+    moveToCoordinates(dest_coords);
     /*while(ros::ok()) {
         //msg.linear.x = 0.1;
         //pub.publish(msg);

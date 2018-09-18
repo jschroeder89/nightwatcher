@@ -7,7 +7,7 @@
 # new environment variables
 
 # modified environment variables
-export CMAKE_PREFIX_PATH="/home/johann/github/nightwatcher/catkin_ws/devel:$CMAKE_PREFIX_PATH"
-export PWD="/home/johann/github/nightwatcher/catkin_ws/build"
-export ROSLISP_PACKAGE_DIRECTORIES="/home/johann/github/nightwatcher/catkin_ws/devel/share/common-lisp"
-export ROS_PACKAGE_PATH="/home/johann/github/nightwatcher/catkin_ws/src:$ROS_PACKAGE_PATH"
+export LD_LIBRARY_PATH="/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/lib:/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib:/opt/ros/kinetic/lib:/opt/ros/kinetic/lib/x86_64-linux-gnu:/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/lib:/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/lib"
+export LUA_PATH=";;/opt/ros/kinetic/share/lua/5.1/?.lua;/opt/ros/kinetic/share/lua/5.1/kdl_typekit/?.lua;/opt/ros/kinetic/share/lua/5.1/?.lua;/opt/ros/kinetic/share/lua/5.1/kdl_typekit/?.lua;/opt/ros/kinetic/share/lua/5.1/?.lua;/opt/ros/kinetic/share/lua/5.1/kdl_typekit/?.lua"
+export PATH="/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/bin:/opt/ros/kinetic/bin:/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/bin:/opt/ros/kinetic/share/euslisp/jskeus/eus//Linux64/bin:/vol/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/vol/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/usr/local/bin:/usr/bin:/bin:/opt/thinlinc/bin"
+export PWD="/homes/joschroeder/github/nightwatcher/catkin_ws/build"

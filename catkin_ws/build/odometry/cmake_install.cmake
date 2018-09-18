@@ -1,8 +1,8 @@
-# Install script for directory: /home/johann/github/nightwatcher/catkin_ws/src/odometry
+# Install script for directory: /homes/joschroeder/github/nightwatcher/catkin_ws/src/odometry
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/johann/github/nightwatcher/catkin_ws/install")
+  set(CMAKE_INSTALL_PREFIX "/homes/joschroeder/github/nightwatcher/catkin_ws/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotest.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotest.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/odotest/cmake" TYPE FILE FILES
-    "/home/johann/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotestConfig.cmake"
-    "/home/johann/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotestConfig-version.cmake"
+    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotestConfig.cmake"
+    "/homes/joschroeder/github/nightwatcher/catkin_ws/build/odometry/catkin_generated/installspace/odotestConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/odotest" TYPE FILE FILES "/home/johann/github/nightwatcher/catkin_ws/src/odometry/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/odotest" TYPE FILE FILES "/homes/joschroeder/github/nightwatcher/catkin_ws/src/odometry/package.xml")
 endif()
 

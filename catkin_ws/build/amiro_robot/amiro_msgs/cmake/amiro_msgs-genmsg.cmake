@@ -2,7 +2,7 @@
 
 message(STATUS "amiro_msgs: 2 messages, 0 services")
 
-set(MSG_I_FLAGS "-Iamiro_msgs:/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
+set(MSG_I_FLAGS "-Iamiro_msgs:/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg;-Istd_msgs:/opt/ros/kinetic/share/std_msgs/cmake/../msg")
 
 # Find all generators
 find_package(gencpp REQUIRED)
@@ -17,14 +17,14 @@ add_custom_target(amiro_msgs_generate_messages ALL)
 
 
 
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_custom_target(_amiro_msgs_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "amiro_msgs" "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" "std_msgs/MultiArrayDimension:std_msgs/MultiArrayLayout:std_msgs/Header:std_msgs/Int32MultiArray"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "amiro_msgs" "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" "std_msgs/UInt16MultiArray:std_msgs/MultiArrayDimension:std_msgs/Header:std_msgs/MultiArrayLayout"
 )
 
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_custom_target(_amiro_msgs_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "amiro_msgs" "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" "std_msgs/UInt16MultiArray:std_msgs/MultiArrayDimension:std_msgs/Header:std_msgs/MultiArrayLayout"
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "amiro_msgs" "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" "std_msgs/MultiArrayDimension:std_msgs/MultiArrayLayout:std_msgs/Header:std_msgs/Int32MultiArray"
 )
 
 #
@@ -34,15 +34,15 @@ add_custom_target(_amiro_msgs_generate_messages_check_deps_${_filename}
 ### Section generating for lang: gencpp
 ### Generating Messages
 _generate_msg_cpp(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/amiro_msgs
 )
 _generate_msg_cpp(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/amiro_msgs
 )
 
@@ -60,9 +60,9 @@ add_custom_target(amiro_msgs_generate_messages_cpp
 add_dependencies(amiro_msgs_generate_messages amiro_msgs_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_cpp _amiro_msgs_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_cpp _amiro_msgs_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -75,15 +75,15 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS amiro_msgs_generate_messages_cpp)
 ### Section generating for lang: geneus
 ### Generating Messages
 _generate_msg_eus(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/amiro_msgs
 )
 _generate_msg_eus(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
   ${CATKIN_DEVEL_PREFIX}/${geneus_INSTALL_DIR}/amiro_msgs
 )
 
@@ -101,9 +101,9 @@ add_custom_target(amiro_msgs_generate_messages_eus
 add_dependencies(amiro_msgs_generate_messages amiro_msgs_generate_messages_eus)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_eus _amiro_msgs_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_eus _amiro_msgs_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -116,15 +116,15 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS amiro_msgs_generate_messages_eus)
 ### Section generating for lang: genlisp
 ### Generating Messages
 _generate_msg_lisp(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/amiro_msgs
 )
 _generate_msg_lisp(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/amiro_msgs
 )
 
@@ -142,9 +142,9 @@ add_custom_target(amiro_msgs_generate_messages_lisp
 add_dependencies(amiro_msgs_generate_messages amiro_msgs_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_lisp _amiro_msgs_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_lisp _amiro_msgs_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -157,15 +157,15 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS amiro_msgs_generate_messages_lisp)
 ### Section generating for lang: gennodejs
 ### Generating Messages
 _generate_msg_nodejs(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/amiro_msgs
 )
 _generate_msg_nodejs(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
   ${CATKIN_DEVEL_PREFIX}/${gennodejs_INSTALL_DIR}/amiro_msgs
 )
 
@@ -183,9 +183,9 @@ add_custom_target(amiro_msgs_generate_messages_nodejs
 add_dependencies(amiro_msgs_generate_messages amiro_msgs_generate_messages_nodejs)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_nodejs _amiro_msgs_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_nodejs _amiro_msgs_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -198,15 +198,15 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS amiro_msgs_generate_messages_nodejs
 ### Section generating for lang: genpy
 ### Generating Messages
 _generate_msg_py(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/amiro_msgs
 )
 _generate_msg_py(amiro_msgs
-  "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg"
   "${MSG_I_FLAGS}"
-  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/UInt16MultiArray.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg"
+  "/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayDimension.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/MultiArrayLayout.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Header.msg;/opt/ros/kinetic/share/std_msgs/cmake/../msg/Int32MultiArray.msg"
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/amiro_msgs
 )
 
@@ -224,9 +224,9 @@ add_custom_target(amiro_msgs_generate_messages_py
 add_dependencies(amiro_msgs_generate_messages amiro_msgs_generate_messages_py)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_py _amiro_msgs_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/johann/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/UInt16MultiArrayStamped.msg" NAME_WE)
+get_filename_component(_filename "/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_msgs/msg/Int32MultiArrayStamped.msg" NAME_WE)
 add_dependencies(amiro_msgs_generate_messages_py _amiro_msgs_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility

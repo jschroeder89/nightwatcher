@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/testsub.dir/src/testsub.cpp.o"
-  "/home/johann/github/nightwatcher/catkin_ws/devel/lib/testsub/testsub.pdb"
-  "/home/johann/github/nightwatcher/catkin_ws/devel/lib/testsub/testsub"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib/testsub/testsub.pdb"
+  "/homes/joschroeder/github/nightwatcher/catkin_ws/devel/lib/testsub/testsub"
 )
 
 # Per-language clean rules from dependency scanning.
