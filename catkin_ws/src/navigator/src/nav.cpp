@@ -55,6 +55,7 @@ void moveToCoordinates(double *dest_coords);
 void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg);
 void odometryDataCallback(const nav_msgs::Odometry& msg);
 void beaconDetected();
+int getQuadrant(double angle);
 double adjustOrientationForDestination(double dest_coords[]);
 double angleCorrection(double dest_angle);
 bool accurateAngle(double dest_angle, double actual_angle);
@@ -118,62 +119,103 @@ double rotationDirection(double dest_angle) {
 
 }
 
-int getDestinationQuadrant(double dest_angle) {
-    if (dest_angle <= 90 && dest_angle >= 0) {
+int getQuadrant(double angle) {
+    if (angle <= 90 && angle >= 0) {
         return quadrant_I;
-    } else if(dest_angle <= 180 && dest_angle > 90) {
+    } else if(angle <= 180 && angle > 90) {
         return quadrant_II;
-    } else if(dest_angle <= 270 && dest_angle > 180) {
+    } else if(angle <= 270 && angle > 180) {
         return quadrant_III;
-    } else if(dest_angle <= 360 && dest_angle > 270) {
+    } else if(angle <= 360 && angle > 270) {
         return quadrant_VI;
     } else return 0;
 }
 
+bool quadrantMatch(double dest_angle, double actual_angle) {
+    if(getQuadrant(dest_angle) == getQuadrant(actual_angle)) return true; else return false; 
+}
+
 double getRotationDirection(double dest_angle, double actual_angle) {
-    data.dest_angle_diff = (dest_angle - actual_angle); 
-    ROS_INFO("angle: %f", data.dest_angle_diff);
-    if (data.dest_angle_diff <= -180 || data.dest_angle_diff > 180) {
-        return fast_rotate_ccw;
-    } else {
-        return fast_rotate_cw;
-    }
+    int dest_quadrant = getQuadrant(dest_angle), int actual_quadrant = getQuadrant(actual_angle);
+    if(dest_quadrant == actual_quadrant) {
+        if(dest_angle > actual_angle) {
+            return fast_rotate_ccw;
+        } else return fast_rotate_cw;
+    } 
+    
+    else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_II) return fast_rotate_cw;
+    else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_VI) return fast_rotate_ccw;
+    else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_III) {
+        if((actual_angle - dest_angle) <= 180) {
+            return fast_rotate_ccw;
+        } else return fast_rotate_cw;
+    } 
+
+    else if(dest_quadrant == quadrant_II && actual_quadrant == quadrant_I) return fast_rotate_ccw;
+    else if(dest_quadrant == quadrant_II && actual_quadrant == quadrant_III) return fast_rotate_cw;
+    else if(dest_quadrant == quadrant_II && actual_quadrant == quadrant_VI) {
+        if((actual_angle - dest_angle) <= 180) {
+            return fast_rotate_cw;
+        } else return fast_rotatte_ccw;
+    } 
+
+    else if(dest_quadrant == quadrant_III && actual_quadrant == quadrant_VI) return fast_rotate_cw;
+    else if(dest_quadrant == quadrant_III && actual_quadrant == quadrant_II) return fast_rotate_ccw;
+    else if(dest_quadrant == quadrant_III && actual_quadrant == quadrant_I) { /*TODO
+        if((actual_angle - dest_angle) <= 180) {
+            return fast_rotate_cw;
+        } else return fast_rotatte_ccw;*/
+    } 
+
+
 }
 
 double adjustOrientationForDestination(double dest_coords[]) {
     geometry_msgs::Twist msg;
     double deg_diff = 0;
-    double norm_dest;
     bool acc_deg = false;
     double position_offset_x = dest_coords[X_COORD] - data.odometry_positions[X_COORD];
     double position_offset_y = dest_coords[Y_COORD] - data.odometry_positions[Y_COORD];
     double dest_angle = rad2deg * calculateAngle(position_offset_x, position_offset_y);
+    
     if (dest_angle < 0) {
         dest_angle = 180 + (180 + dest_angle);
     } else dest_angle = dest_angle;
     ROS_INFO("dest_angle: %f", dest_angle);
     ROS_INFO("%f %f %f", position_offset_x, position_offset_y, dest_angle);
-    msg.angular.z = getRotationDirection(dest_angle, data.odometry_orientation_deg);
+    int destQuadrant = getQuadrant(dest_angle), actualQuadrant = getQuadrant(data.odometry_orientation_deg);
+
+    msg.angular.z = getRotationDirection(destQuadrant, actualQuadrant);
     do {
         ros::spinOnce();
         pub.publish(msg);
-        if(dest_angle > 180) {
+        /*if(dest_angle > 180) {
             if(data.odometry_orientation_deg > 180) {
-                deg_diff = dest_angle - data.odometry_orientation_deg;
+                deg_diff = (dest_angle - data.odometry_orientation_deg);
                 ROS_INFO("dest_angle > 180 if %f", deg_diff);
+                ROS_INFO("dest_angle: %f, data.odo: %f", dest_angle, data.odometry_orientation_deg);
             } else if(data.odometry_orientation_deg <= 180) {
-                deg_diff = dest_angle - (360 - data.odometry_orientation_deg);
-                ROS_INFO("dest_angle > 180 else %f", deg_diff); 
+                deg_diff = ((360 - data.odometry_orientation_deg) - dest_angle);
+                ROS_INFO("dest_angle > 180 else %f", deg_diff);
+                ROS_INFO("dest_angle: %f, data.odo: %f", dest_angle, data.odometry_orientation_deg); 
             } if(deg_diff > accuracyConstAngle) break;
         } else if(dest_angle <= 180) {
             if(data.odometry_orientation_deg > 180) {
                 deg_diff = dest_angle + (360 - data.odometry_orientation_deg);
                 ROS_INFO("dest_angle <= 180 if %f", deg_diff);
+                ROS_INFO("dest_angle: %f, data.odo: %f", dest_angle, data.odometry_orientation_deg);
             } else if(data.odometry_orientation_deg <= 180) {
                 deg_diff = dest_angle - data.odometry_orientation_deg;
                 ROS_INFO("dest_angle <= 180 else %f", deg_diff);
+                ROS_INFO("dest_angle: %f, data.odo: %f", dest_angle, data.odometry_orientation_deg);
             } if(deg_diff < accuracyConstAngle) break;
-        }
+        }*/
+        deg_diff = dest_angle - data.odometry_orientation_deg;
+        ROS_INFO("dest_angle: %f", dest_angle);
+        ROS_INFO("data.odo: %f", data.odometry_orientation_deg);
+        ROS_INFO("deg_diff %f", deg_diff);
+
+        //if((deg_diff < accuracyConstAngle) && quadrantMatch(dest_angle, data.odometry_orientation_deg)); break;
     } while(true);
     msg.angular.z = 0;
     pub.publish(msg);
@@ -373,14 +415,14 @@ main(int argc, char **argv) {
 
     double dest_coords[2] = {2, 2.5};
     ros::Duration(3.0).sleep();
-    moveToCoordinates(dest_coords);
+    //moveToCoordinates(dest_coords);
     //generateRandomCoords();
-    //adjustOrientationForDestination(dest_coords);
+    adjustOrientationForDestination(dest_coords);
     //exploration();
     //ROS_INFO("1. HOP DONE");
-    dest_coords[0] = 2;
-    dest_coords[1] = 2;
-    moveToCoordinates(dest_coords);
+    //dest_coords[0] = 2;
+    //dest_coords[1] = 2;
+    //moveToCoordinates(dest_coords);
     //ROS_INFO("2. HOP DONE");
     //ros::Duration(1.0).sleep();
     //dest_coords[0] = 2.4;
