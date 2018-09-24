@@ -11,10 +11,10 @@
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-#define FLOOR_FRONT_RIGHT 0
-#define FLOOR_FRONT_LEFT 3
-#define FLOOR_SIDE_RIGHT 1
-#define FLOOR_SIDE_LEFT 2
+#define FRONT_RIGHT 0
+#define FRONT_LEFT 3
+#define SIDE_RIGHT 1
+#define SIDE_LEFT 2
 #define X_COORD 0
 #define Y_COORD 1
 #define X_COORD_MID_MAP 2.50
@@ -25,9 +25,12 @@
 #define deg2rad M_PI/180
 #define fast_rotate_ccw 0.3
 #define fast_rotate_cw -0.3
-#define slow_rotate 0.25
+#define slow_rotate_ccw 0.15
+#define slow_rotate_cw -0.15
+#define unbelieveable_slow_rotate_ccw 0.07
+#define unbelieveable_slow_rotate_cw -0.07
 #define angular_offset 1e-6
-#define angular_correction 0.05
+#define angular_correction 0.025
 #define x_min_map 0.075
 #define x_max_map 4.925
 #define y_min_map 0.075
@@ -50,28 +53,41 @@
 ros::Publisher pub;
 
 /*Prototypes*/
+int getQuadrant(double angle);
+int getBeaconId();
+bool oldBeacon();
+bool proximityFrontLeftDetected();
+bool proximityFrontRightDetected();
+bool proximitySideLeftDetected();
+bool proximitySideRightDetected();
+bool proximityFrontBlack();
+bool proximityAllDetected();
+void setAngularVelocity(double val);
+void setLinearVelocity(double val);
 void getInitPosition();
 void moveToCoordinates(double *dest_coords);
+void rotateToDestination(double dest_angle, double actual_angle);
 void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg);
 void odometryDataCallback(const nav_msgs::Odometry& msg);
-void beaconDetected();
-int getQuadrant(double angle);
+void beaconDetected(double dest_coords);
+void exploration();
 double adjustOrientationForDestination(double dest_coords[]);
-double angleCorrection(double dest_angle);
-bool accurateAngle(double dest_angle, double actual_angle);
-inline double accuratePosition(double dest_coord, double actual_coord);
+double angleCorrection(double dest_angle, double actual_angle);
 inline double calculateAngle(double x_coord, double y_coord);
-inline double calculateAngleOffset(double dest_angle, double actual_angle);
+
 
 
 /*Global Struct*/
 struct roboData {
-    double init_positions[2] = {0, 0};
     bool beacon_detected;
+    int detecting_sensor_id;
     size_t proximity_floor_values[4];
+    double init_positions[2] = {0, 0};
     double odometry_positions[2];
     double odometry_orientation_deg;
-    double dest_angle_diff;
+    double odometry_orientation_beacon_first_contact;
+    double odometry_orientation_beacon_second_contact;
+
 } data;
 
 void getInitPosition() {
@@ -87,36 +103,8 @@ void getInitPosition() {
     ROS_INFO("Initial Positions: x:[%f] y:[%f]", data.init_positions[X_COORD], data.init_positions[Y_COORD]);
 }
 
-bool accurateAngle(double dest_angle, double actual_angle) {
-    double acc_deg;
-    acc_deg = dest_angle - actual_angle;
-    if(acc_deg < 0) {
-        ROS_INFO("true");
-        if(acc_deg > accuracyConstAngle) {
-            return true;
-        } 
-    } else {
-        if(acc_deg < accuracyConstAngle) {
-            return true;
-        }
-    }
-}
-
-inline double accuratePosition(double dest_coord, double actual_coord) {
-    ROS_INFO("dest_coord - actual_coord: %f < %f", std::fabs(dest_coord - actual_coord), accuracyConstPosition);
-    return std::fabs(dest_coord - actual_coord);
-} 
-
 inline double calculateAngle(double x_coord, double y_coord) {
     return atan2(y_coord, x_coord); /*y goes first*/
-}
-
-inline double calculateAngleOffset(double dest_angle, double actual_angle) {
-    return dest_angle - actual_angle;
-}
-
-double rotationDirection(double dest_angle) {
-
 }
 
 int getQuadrant(double angle) {
@@ -129,14 +117,6 @@ int getQuadrant(double angle) {
     } else if(angle <= 360 && angle > 270) {
         return quadrant_VI;
     } else return 0;
-}
-
-bool quadrantMatch(double dest_angle, double actual_angle) {
-    if(getQuadrant(dest_angle) == getQuadrant(actual_angle)) return true; else return false; 
-}
-
-void rotateRobot() {
-
 }
 
 void rotateToDestination(double dest_angle, double actual_angle) {
@@ -360,15 +340,12 @@ double angleCorrection(double dest_angle, double actual_angle) {
     int dest_quadrant = getQuadrant(dest_angle);
     int actual_quadrant = getQuadrant(actual_angle);
     if(dest_quadrant == quadrant_VI && actual_quadrant == quadrant_I) {
-        return 
-
+        return -angular_correction;
     } else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_VI) {
-        
-    } else return angle_offset = dest_angle - actual_angle;
-}
-
-bool positionAccuracy(double acc_x, double acc_y, double dest_angle) {
-          
+        return angular_correction;
+    } else if((dest_angle - actual_angle) < 0) {
+        return -angular_correction;
+    } else return angular_correction;
 }
 
 void moveToCoordinates(double *dest_coords) {
@@ -377,13 +354,16 @@ void moveToCoordinates(double *dest_coords) {
     double acc_y = 0;
     double acc_pos = 0;
     double dest_angle = adjustOrientationForDestination(dest_coords);
-    msg.linear.x = 0.035;
+    msg.linear.x = 0.075;
     do {
         acc_x = std::fabs(dest_coords[X_COORD] - data.odometry_positions[X_COORD]);
         acc_y = std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]);
         acc_pos = (acc_x + acc_y)/2;
-        msg.angular.z = angleCorrection(dest_angle);
-        //if(data.beacon_detected == true) beaconDetected();
+        msg.angular.z = angleCorrection(dest_angle, data.odometry_orientation_deg);
+        if(data.beacon_detected == true){
+            beaconDetected(dest_coords);
+            break;
+        } 
         ros::spinOnce();
         pub.publish(msg);
         if (acc_pos < accuracyConstPosition) break;
@@ -408,20 +388,26 @@ values.header.frame_id = "";
 
     for (std::size_t idx = 0; idx < 4; ++idx) {
 
-    // Integrate over all pixel values to get the mean gray value
-    size_t grayIntegrated = 0;
+        // Integrate over all pixel values to get the mean gray value
+        size_t grayIntegrated = 0;
         for(auto it = msgs[idx]->data.begin(); it != msgs[idx]->data.end(); ++it) {
             grayIntegrated += size_t(*it);
         }
-    // Normalize to 0 .. 255
-    const double gray = double(grayIntegrated) / msgs[idx]->data.size();
-    data.proximity_floor_values[idx] = gray;
-    if(data.proximity_floor_values[idx] < beacon_threshold) data.beacon_detected = true; else data.beacon_detected = false;
-    /*ROS_INFO("SIDE LEFT: %zu, FRONT LEFT: %zu, FRONT LEFT: %zu, FRONT RIGHT: %zu",
-                                    data.proximity_floor_values[FLOOR_SIDE_LEFT],
-                                    data.proximity_floor_values[FLOOR_FRONT_LEFT],
-                                    data.proximity_floor_values[FLOOR_FRONT_RIGHT],
-                                    data.proximity_floor_values[FLOOR_SIDE_RIGHT]);*/
+        // Normalize to 0 .. 255
+        const double gray = double(grayIntegrated) / msgs[idx]->data.size();
+        data.proximity_floor_values[idx] = gray;
+        if(data.proximity_floor_values[idx] <= beacon_threshold) {
+            data.beacon_detected = true;
+            data.detecting_sensor_id = idx;
+        } else {
+            data.beacon_detected = false;
+        }
+        
+        /*ROS_INFO("SIDE LEFT: %zu, FRONT LEFT: %zu, FRONT LEFT: %zu, FRONT RIGHT: %zu",
+                                        data.proximity_floor_values[SIDE_LEFT],
+                                        data.proximity_floor_values[FRONT_LEFT],
+                                        data.proximity_floor_values[FRONT_RIGHT],
+                                        data.proximity_floor_values[SIDE_RIGHT]);*/
     }
 }
 
@@ -444,17 +430,192 @@ void odometryDataCallback(const nav_msgs::Odometry& msg) {
                                         
 }
 
-void beaconDetected() {
+int getBeaconId() {
+    if(proximity_floor_values[FRONT_LEFT] <= black_threshold &&
+       proximity_floor_values[FRONT_RIGHT] <= black_threshold) {
+        if(proximity_floor_values[SIDE_RIGHT] > low_threshold_gray_100 &&
+           proximity_floor_values[SIDE_RIGHT] < high_threshold_gray_100) {
+            if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_100 &&
+                proximity_floor_values[SIDE_LEFT] < high_threshold_gray_100) {
+                return 0;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_125 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_125) {
+                return 1;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_150 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_150) {
+                return 2; 
+            }
+        } else if(proximity_floor_values[SIDE_RIGHT] > low_threshold_gray_125 &&
+                    proximity_floor_values[SIDE_RIGHT] < high_threshold_gray_125) {
+            if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_100 &&
+                proximity_floor_values[SIDE_LEFT] < high_threshold_gray_100) {
+                return 3;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_125 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_125) {
+                return 4;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_150 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_150) {
+                return 5; 
+            }
+        } else if(proximity_floor_values[SIDE_RIGHT] > low_threshold_gray_150 &&
+                    proximity_floor_values[SIDE_RIGHT] < high_threshold_gray_150) {
+            if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_100 &&
+                proximity_floor_values[SIDE_LEFT] < high_threshold_gray_100) {
+                return 6;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_125 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_125) {
+                return 7;
+            } else if(proximity_floor_values[SIDE_LEFT] > low_threshold_gray_150 &&
+                        proximity_floor_values[SIDE_LEFT] < high_threshold_gray_150) {
+                return 8; 
+            }
+        }
+    }
+}
 
+bool oldBeacon() {
+
+}
+
+bool proximityFrontLeftDetected() {
+    if(proximity_floor_values[FRONT_LEFT] < beacon_threshold) return true; else return false;
+}
+
+bool proximityFrontRightDetected() {
+    if(proximity_floor_values[FRONT_RIGHT] < beacon_threshold) return true; else return false;
+}
+
+bool proximitySideLeftDetected() {
+    if(proximity_floor_values[SIDE_LEFT] < beacon_threshold) return true; else return false;
+}
+
+bool proximitySideRightDetected() {
+    if(proximity_floor_values[SIDE_RIGHT] < beacon_threshold) return true; else return false;
+}
+
+bool proximityFrontBlack() {
+    if(proximity_floor_values[FRONT_LEFT] <= black_threshold &&
+       proximity_floor_values[FRONT_RIGHT] <= black_threshold) return true; else return false;
+}
+
+bool proximityAllDetected() {
+    if(proximity_floor_values[FRONT_LEFT] < beacon_threshold &&
+        proximity_floor_values[FRONT_RIGHT] < beacon_threshold &&
+        proximity_floor_values[SIDE_LEFT] < beacon_threshold &&
+        proximity_floor_values[SIDE_RIGHT] < beacon_threshold) return true; else return false;
+}
+
+void setAngularVelocity(double val) {
+    geometry_msgs::Twist msg;
+    msg.angular.z = val;
+    pub.publish(msg);
+    ros::spinOnce();
+}
+
+void setLinearVelocity(double val) {
+    geometry_msgs::Twist msg;
+    msg.linear.x = val;
+    pub.publish(msg);
+    ros::spinOnce();
+}
+
+void beaconDetected(double dest_coords) {
+    if(scannedBeacon()) return;
+    geometry_msgs::Twist msg;
+    double orientation_diff, orientation_diff_half, orientation_new, deg_diff;
+    setLinearVelocity(0);
+    switch(data.detecting_sensor_id) {
+        case FRONT_LEFT:
+            break;
+        case FRONT_RIGHT:
+
+            break;
+        case SIDE_LEFT:
+            msg.angular.z = slow_rotate_ccw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontLeftDetected());
+            setAngularVelocity(0);
+            data.odometry_orientation_beacon_first = data.odometry_orientation_deg;
+            first_quadrant = getQuadrant(data.odometry_orientation_deg);
+            msg.angular.z = slow_rotate_ccw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected());
+            setAngularVelocity(0);
+            data.odometry_orientation_beacon_second_contact = data.odometry_orientation_deg;
+            second_quadrant = getQuadrant(data.odometry_orientation_deg);
+            if(first_quadrant == quadrant_VI && second_quadrant == quadrant_I) {
+                orientation_diff = data.odometry_orientation_beacon_second_contact -
+                                    (360 - data.odometry_orientation_beacon_first_contact);
+            } else {
+                orientation_diff = (data.odometry_orientation_beacon_second_contact
+                                - data.odometry_orientation_beacon_first_contact);
+            }
+            orientation_diff_half = orientation_diff / 2;
+            orientation_new = data.odometry_orientation_beacon_second_contact - orientation_diff_half;
+            if(orientation_new < 0) {
+                orientation_new = 360 + orientation_new;
+            }
+            final_quadrant = getQuadrant(orientation_new);
+            if(second_quadrant == quadrant_I && final_quadrant == quadrant_VI) {
+                msg.angular.z = slow_rotate_cw;
+                do {
+                    q = getQuadrant(data.odometry_orientation_deg);
+                    pub.publish(msg);
+                    ros::spinOnce();
+                } while(q != quadrant_VI);
+                do {
+                    deg_diff = data.odometry_orientation_deg - orientation_new;
+                } while(deg_diff < accuracyConstAngle);
+            }
+            msg.angular.z = 0;
+            msg.linear.x = -0.002;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected() && proximityFrontRightDetected());
+            
+            setLinearVelocity(0);
+
+            ros::Duration(0.5).sleep();
+            setLinearVelocity(0.06);
+            do {
+
+            } while()
+            /*ros::Duration(2).sleep();
+            setLinearVelocity(0);
+            msg.angular.z = slow_rotate_cw;*/
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontBlack());
+            setAngularVelocity(0);
+            getBeaconId();
+            //ID, pose2D und theta in YAML-Datei speichern
+            moveToCoordinates(dest_coords);
+            break;
+
+        case SIDE_RIGHT:
+            msg.angular.z = slow_rotate_cw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontRightDetected());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            ros::spinOnce();
+
+
+            break;
+    }
 }
 
 void moveToMiddleOfTheMap() {
     double middle_of_map[2] = {X_COORD_MID_MAP, Y_COORD_MID_MAP};
     moveToCoordinates(middle_of_map);
-}
-
-void checkBorders() {
-
 }
 
 void exploration() {
@@ -466,7 +627,7 @@ void exploration() {
     last_hop_x = data.odometry_positions[X_COORD];
     last_hop_y = data.odometry_positions[Y_COORD];
 
-    //moveToMiddleOfTheMap();
+    moveToMiddleOfTheMap();
     int i = 1;
     do {  
         if(!even_step) {    
@@ -497,7 +658,7 @@ void exploration() {
             i++;
         }
         
-    } while(i <= 7);
+    } while(i <= 14);
 }
 
 main(int argc, char **argv) {
@@ -525,7 +686,7 @@ main(int argc, char **argv) {
     sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
     getInitPosition();
 
-    double dest_coords[2] = {2.6, 2.6};
+    double dest_coords[2] = {3, 2.5};
     ros::Duration(3.0).sleep();
     //moveToCoordinates(dest_coords);
     //adjustOrientationForDestination(dest_coords);
