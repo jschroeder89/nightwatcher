@@ -203,4 +203,4 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(nav src/nav.cpp)
-target_link_libraries(nav ${catkin_LIBRARIES})
+target_link_libraries(nav yaml-cpp ${catkin_LIBRARIES})
