@@ -144,6 +144,14 @@ int getQuadrant(double angle) {
     } else return 0;
 }
 
+bool quadrantMatch(int dest_quadrant, int actual_quadrant) {
+    if(dest_quadrant == actual_quadrant) {
+        return true;
+    }  else {
+        return false;
+    } 
+}
+
 void rotateToDestination(double dest_angle, double actual_angle) {
     int dest_quadrant = getQuadrant(dest_angle);
     int actual_quadrant = getQuadrant(actual_angle);
@@ -159,17 +167,28 @@ void rotateToDestination(double dest_angle, double actual_angle) {
             msg.angular.z = fast_rotate_ccw; 
             do {
                 deg_diff = dest_angle - data.odometry_orientation_deg;
-                //ROS_INFO("deg_diff: %f", deg_diff);
+                ROS_INFO("IF deg_diff: %f", deg_diff);
                 pub.publish(msg);
                 ros::spinOnce();
-            } while(deg_diff > accuracyConstAngle);
+                q = getQuadrant(data.odometry_orientation_deg);
+                if(!quadrantMatch(dest_quadrant, q)) break;
+                //ROS_INFO("%i, %i", dest_quadrant, actual_quadrant);
+            } while((deg_diff > accuracyConstAngle));
+            msg.angular.z = 0;
+            pub.publish(msg);
         } else {
             msg.angular.z = fast_rotate_cw;
             do {
                 deg_diff = dest_angle - data.odometry_orientation_deg;
+                ROS_INFO("ELSE deg_diff: %f", deg_diff);
+                q = getQuadrant(data.odometry_orientation_deg);
                 pub.publish(msg);
                 ros::spinOnce();
-            } while(deg_diff < accuracyConstAngle); 
+                if(!quadrantMatch(dest_quadrant, q)) break;
+                //ROS_INFO("%i, %i", dest_quadrant, actual_quadrant);
+            } while((deg_diff < accuracyConstAngle));
+            msg.angular.z = 0;
+            pub.publish(msg); 
         }
     } 
 
