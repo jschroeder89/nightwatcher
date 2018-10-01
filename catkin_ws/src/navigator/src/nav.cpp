@@ -38,15 +38,15 @@
 #define x_max_map 4.925
 #define y_min_map 0.075
 #define y_max_map 3.925
-#define beacon_threshold 200
 #define areal_threshold 0.2
-#define high_threshold_gray_100 110
-#define low_threshold_gray_100 90
-#define high_threshold_gray_125 140
-#define low_threshold_gray_125 115
-#define high_threshold_gray_150 170
-#define low_threshold_gray_150 145
-#define black_threshold 50
+#define beacon_threshold 200.0
+#define high_threshold_gray_100 110.0
+#define low_threshold_gray_100 90.0
+#define high_threshold_gray_125 140.0
+#define low_threshold_gray_125 115.0
+#define high_threshold_gray_150 170.0
+#define low_threshold_gray_150 145.0
+#define black_threshold 50.0
 #define amiro_base_diameter 0.1
 #define quadrant_I 1
 #define quadrant_II 2
@@ -73,6 +73,7 @@ std::string yaml_path = "/homes/joschroeder/route.yaml";
 /*Global Struct*/
 struct roboData {
     bool beacon_detected;
+    bool near_beacon;
     int detecting_sensor_id;
     int beacon_counter = 0;
     double proximity_floor_values[4];
@@ -94,6 +95,9 @@ bool proximitySideRightDetected();
 bool proximityFrontBlack();
 bool proximityAllDetected();
 bool beaconBelow();
+void resetBeaconDetection();
+void appendBeaconArray();
+void printBeaconArray();    
 void appendYAML(beacon &b);
 void setAngularVelocity(double val);
 void setLinearVelocity(double val);
@@ -188,10 +192,12 @@ void rotateToDestination(double dest_angle, double actual_angle) {
     else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_II) {
         msg.angular.z = fast_rotate_cw;
         do {
+            q = getQuadrant(data.odometry_orientation_deg);
             deg_diff = dest_angle - data.odometry_orientation_deg;
             ROS_INFO("deg_diff: %f", deg_diff);
             pub.publish(msg);
             ros::spinOnce();
+            if(q == quadrant_VI) break;
         } while(deg_diff < accuracyConstAngle);
     } else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_VI) {
         msg.angular.z = fast_rotate_ccw;
@@ -387,6 +393,9 @@ double angleCorrection(double dest_angle, double actual_angle) {
 
 void moveToCoordinates(double *dest_coords) {
     geometry_msgs::Twist msg;
+    ros::Duration time_diff;
+    ros::Duration safety_duration(1.00);
+    ros::Time start;
     double acc_x = 0; 
     double acc_y = 0;
     double acc_pos = 0;
@@ -397,15 +406,21 @@ void moveToCoordinates(double *dest_coords) {
         acc_y = std::fabs(dest_coords[Y_COORD] - data.odometry_positions[Y_COORD]);
         acc_pos = (acc_x + acc_y)/2;
         msg.angular.z = angleCorrection(dest_angle, data.odometry_orientation_deg);
-        //if(beaconBelow()) ROS_INFO("TRUE BEACON");
-        //if(!scannedBeacon()) ROS_INFO("FALSE SCANNED");
-        scannedBeacon(); 
-        if(!scannedBeacon() && beaconBelow()) {
-            ROS_INFO("NEW BEACON");
+        
+        if(beaconBelow() && !scannedBeacon()) {
             beaconDetected(dest_coords);
+            appendBeaconArray();
+            break;
             adjustOrientationForDestination(dest_coords);
+            msg.linear.x = 0.075;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < safety_duration);
             continue;
-        }
+        }   
         ros::spinOnce();
         pub.publish(msg);
         if (acc_pos < accuracyConstPosition) break;
@@ -414,6 +429,13 @@ void moveToCoordinates(double *dest_coords) {
     msg.linear.x = 0;
     msg.linear.z = 0;
     pub.publish(msg);
+}
+
+void resetBeaconDetection() {
+    data.proximity_floor_values[FRONT_LEFT] = 0;
+    data.proximity_floor_values[FRONT_RIGHT] = 0;
+    data.proximity_floor_values[SIDE_LEFT] = 0;
+    data.proximity_floor_values[SIDE_RIGHT] = 0;
 }
 
 bool beaconBelow() {
@@ -475,9 +497,9 @@ void odometryDataCallback(const nav_msgs::Odometry& msg) {
     if (y*rad2deg < 0) {
         data.odometry_orientation_deg = 180 + (180 + y*rad2deg);
     } else data.odometry_orientation_deg = y*rad2deg;
-    //ROS_INFO("x: %f, y: %f, theta: %f", data.odometry_positions[X_COORD],
-    //                                    data.odometry_positions[Y_COORD], 
-    //                                    data.odometry_orientation_deg);
+    ROS_INFO("x: %f, y: %f, theta: %f", data.odometry_positions[X_COORD],
+                                        data.odometry_positions[Y_COORD], 
+                                        data.odometry_orientation_deg);
                                         
 }
 
@@ -491,19 +513,32 @@ void initYAML() {
     fout << out.c_str();
 }
 
+void printBeaconArray() {
+    for(int i = 0; i <= data.beacon_counter; i++) {
+        ROS_INFO("beacon counter: %i", data.beacon_counter);
+        ROS_INFO("id: %i", beacon_array[data.beacon_counter].id);
+        ROS_INFO("beacon pos_x: %f", beacon_array[data.beacon_counter].pose2d[X_COORD]);
+        ROS_INFO("beacon pos_y: %f", beacon_array[data.beacon_counter].pose2d[Y_COORD]);
+        ROS_INFO("beacon theta: %f", beacon_array[data.beacon_counter].pose2d[THETA]);
+    }
+}
+
 void appendBeaconArray() {
-    int id = beacon_array[data.beacon_counter].id;
-    beacon_array[data.beacon_counter].pose2d[X_COORD] = data.odometry_positions[X_COORD];
-    beacon_array[data.beacon_counter].pose2d[Y_COORD] = data.odometry_positions[Y_COORD];
-    beacon_array[data.beacon_counter].pose2d[THETA] = data.odometry_orientation_deg;
+    ros::spinOnce();
+    beacon b;
+    b.id = getBeaconId();
+    b.pose2d[X_COORD] = data.odometry_positions[X_COORD];
+    b.pose2d[Y_COORD] = data.odometry_positions[Y_COORD];
+    b.pose2d[THETA] = data.odometry_orientation_deg;
+    beacon_array[data.beacon_counter] = b;
     ROS_INFO("Beacon ID: %i, Beacon #: %i", beacon_array[data.beacon_counter].id, data.beacon_counter);
     ROS_INFO("X_COORD: %f Y_COORD: %f THETA: %f", beacon_array[data.beacon_counter].pose2d[X_COORD],
                                                     beacon_array[data.beacon_counter].pose2d[Y_COORD],
                                                      beacon_array[data.beacon_counter].pose2d[THETA]);
-    ++data.beacon_counter;
+    data.beacon_counter++;
 }
 
-void appendYAML(beacon &b) {
+void appendYAML() {
     //YAML::Node test = YAML::LoadFile("/homes/joschroeder/github/nightwatcher/catkin_ws/src/amiro_robot/amiro_gazebo/yaml/watchmen_route_0.yaml");
     out << YAML::BeginSeq;
     
@@ -560,12 +595,14 @@ int getBeaconId() {
 }
 
 bool scannedBeacon() {
-    double pos_diff_x, pos_diff_y;
-    for(int i = 0; i <= data.beacon_counter; ++i) {
-        pos_diff_x = std::fabs(beacon_array[i].pose2d[X_COORD] - data.odometry_positions[X_COORD]);
-        pos_diff_y = std::fabs(beacon_array[i].pose2d[Y_COORD] - data.odometry_positions[Y_COORD]);
-        ROS_INFO("i = %i diff_x :%f diff_y %f", i, pos_diff_x, pos_diff_y);
-        if((pos_diff_x < areal_threshold) && (pos_diff_y < areal_threshold)) {
+    ros::spinOnce();
+    double pos_diff_x, pos_diff_y, distance_to_beacon;
+    for(int i = 0; i <= data.beacon_counter; i++) {
+        pos_diff_x = beacon_array[i].pose2d[Y_COORD] - data.odometry_positions[Y_COORD];
+        pos_diff_y = beacon_array[i].pose2d[X_COORD] - data.odometry_positions[X_COORD];
+        distance_to_beacon = sqrt((pow(pos_diff_x, 2)) + (pow(pos_diff_y, 2)));
+        //ROS_INFO("i = %i , distance: %f", i, distance_to_beacon);
+        if(distance_to_beacon < areal_threshold) {
             //ROS_INFO("TRUE");
             return true;
         } else {
@@ -578,13 +615,15 @@ bool scannedBeacon() {
 
 void scanBaseBeacon() {
     ros::spinOnce();
-    beacon_array[0].id = getBeaconId();
-    beacon_array[0].pose2d[X_COORD] = data.odometry_positions[X_COORD];
-    beacon_array[0].pose2d[Y_COORD] = data.odometry_positions[Y_COORD];
-    beacon_array[0].pose2d[THETA] = data.odometry_orientation_deg;
-    ROS_INFO("Beacon ID: %i, Beacon #: %i", beacon_array[0].id, data.beacon_counter);
-    ROS_INFO("X_COORD: %f Y_COORD: %f THETA: %f", beacon_array[0].pose2d[X_COORD], beacon_array[0].pose2d[Y_COORD], beacon_array[0].pose2d[THETA]);
-    ++data.beacon_counter;
+    beacon b;
+    b.id = getBeaconId();
+    b.pose2d[X_COORD] = data.odometry_positions[X_COORD];
+    b.pose2d[Y_COORD] = data.odometry_positions[Y_COORD];
+    b.pose2d[THETA] = data.odometry_orientation_deg;
+    beacon_array[0] = b;
+    ROS_INFO("Beacon ID: %i, Beacon #: %i", b.id, data.beacon_counter);
+    ROS_INFO("X_COORD: %f Y_COORD: %f THETA: %f", b.pose2d[X_COORD], b.pose2d[Y_COORD], b.pose2d[THETA]);
+    data.beacon_counter++;
     //appendYAML(base);
 }
 
@@ -614,20 +653,6 @@ bool proximityAllDetected() {
         data.proximity_floor_values[FRONT_RIGHT] < beacon_threshold &&
         data.proximity_floor_values[SIDE_LEFT] < beacon_threshold &&
         data.proximity_floor_values[SIDE_RIGHT] < beacon_threshold) return true; else return false;
-}
-
-void setAngularVelocity(double val) {
-    geometry_msgs::Twist msg;
-    msg.angular.z = val;
-    pub.publish(msg);
-    ros::spinOnce();
-}
-
-void setLinearVelocity(double val) {
-    geometry_msgs::Twist msg;
-    msg.linear.x = val;
-    pub.publish(msg);
-    ros::spinOnce();
 }
 
 void beaconDetected(double dest_coords[]) {
@@ -718,7 +743,7 @@ void beaconDetected(double dest_coords[]) {
                 } else {
                     do {
                         deg_diff = data.odometry_orientation_deg - orientation_new; 
-                        ROS_INFO("deg_diff: %f", deg_diff);
+                        //ROS_INFO("deg_diff: %f", deg_diff);
                         pub.publish(msg);
                         ros::spinOnce();
                     } while(deg_diff > accuracyConstAngle);
@@ -747,6 +772,8 @@ void beaconDetected(double dest_coords[]) {
                 pub.publish(msg);
                 ros::spinOnce();
             } while(!proximityFrontBlack());
+            msg.angular.z = 0.03;
+            ros::Duration(0.5).sleep();
             msg.linear.x = 0;
             msg.angular.z = 0;
             pub.publish(msg);
@@ -857,6 +884,8 @@ void beaconDetected(double dest_coords[]) {
                 pub.publish(msg);
                 ros::spinOnce();
             } while(!proximityFrontBlack());
+            msg.angular.z = 0.03;
+            ros::Duration(0.5).sleep();
             msg.linear.x = 0;
             msg.angular.z = 0;
             appendBeaconArray();
@@ -974,6 +1003,8 @@ void beaconDetected(double dest_coords[]) {
                 pub.publish(msg);
                 ros::spinOnce();
             } while(!proximityFrontBlack());
+            msg.angular.z = 0.03;
+            ros::Duration(0.5).sleep();
             msg.linear.x = 0;
             msg.angular.z = 0;
             pub.publish(msg);
@@ -1097,6 +1128,8 @@ void beaconDetected(double dest_coords[]) {
                 pub.publish(msg);
                 ros::spinOnce();
             } while (!proximityFrontBlack());
+            msg.angular.z = 0.03;
+            ros::Duration(0.5).sleep();
             msg.linear.x = 0;
             msg.angular.z = 0;
             appendBeaconArray();
@@ -1154,6 +1187,73 @@ void exploration() {
     } while(i <= 100);
 }
 
+void moveToCoordinatesEncoder(double *dest_coords) {
+    geometry_msgs::Twist msg;
+    ros::Duration time_diff;
+    ros::Duration safety_duration(1.00);
+    ros::Time start;
+    double acc_x = 0;
+    double acc_y = 0;
+    double acc_pos = 0;
+    double offset_route_0 = 2.5;
+    double error = 0.002;
+    dest_coords[X_COORD] = dest_coords[X_COORD] - 2.5;
+    dest_coords[Y_COORD] = dest_coords[Y_COORD] - 2.5;
+    double dest_angle = adjustOrientationForDestination(dest_coords);
+    msg.linear.x = 0.075;
+    do
+    {
+        acc_x = std::fabs(dest_coords[X_COORD] - (data.odometry_positions[X_COORD] - error));
+        acc_y = std::fabs(dest_coords[Y_COORD] - (data.odometry_positions[Y_COORD] - error));
+        acc_pos = (acc_x + acc_y) / 2;
+        msg.angular.z = angleCorrection(dest_angle, data.odometry_orientation_deg);
+        //msg.angular.z = 0.05;
+        if (beaconBelow() && !scannedBeacon())
+        {
+            //beaconDetected(dest_coords);
+            appendBeaconArray();
+            adjustOrientationForDestination(dest_coords);
+            msg.linear.x = 0.075;
+            start = ros::Time::now();
+            do
+            {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while (time_diff < safety_duration);
+            continue;
+        }
+        ros::spinOnce();
+        pub.publish(msg);
+        if (acc_pos < accuracyConstPosition)
+            break;
+    } while (true);
+    ros::spinOnce();
+    msg.linear.x = 0;
+    msg.linear.z = 0;
+    pub.publish(msg);
+}
+
+
+void exploreMap() {
+    ros::Duration(3.0).sleep();
+    getInitPosition();
+    scanBaseBeacon();
+    scannedBeacon();
+    exploration();
+}
+
+void beaconNavigation() {
+    ros::Duration(3.0).sleep();
+    scanBaseBeacon();
+    scannedBeacon();
+    double dest_coords[2] = {3, 2.5};
+    moveToCoordinatesEncoder(dest_coords);
+    //double dest_coords_next[2] = {3, 3};
+    //adjustOrientationForDestination(dest_coords_next);
+    //moveToCoordinatesEncoder(dest_coords_next);
+}
+
 main(int argc, char **argv) {
     ros::init(argc, argv, "nav");
     
@@ -1177,32 +1277,18 @@ main(int argc, char **argv) {
 
     message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), sub0, sub1, sub2, sub3);
     sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
-    getInitPosition();
-
-    //double dest_coords[2] = {2.5, 2.43};
+    
+    
+    //exploreMap(); //NOTE Use World Odometry 
     ros::Duration(3.0).sleep();
+    getInitPosition();
     scanBaseBeacon();
-    //scannedBeacon();
+    scannedBeacon();
+    beaconNavigation(); //NOTE Use Encoder Odometry
+    //double dest_coords[2] = {3, 2.50};
     //moveToCoordinates(dest_coords);
-    //adjustOrientationForDestination(dest_coords);
-    exploration();
-    //ROS_INFO("1. HOP DONE");
     //dest_coords[0] = 4;
-    //dest_coords[1] = 2.43;
+    //dest_coords[1] = 2.57;
     //moveToCoordinates(dest_coords);
-    //ROS_INFO("2. HOP DONE");
-    //ros::Duration(1.0).sleep();
-    //dest_coords[0] = 2.4;
-    //dest_coords[1] = 2.6;
-    //moveToCoordinates(dest_coords);
-    //dest_coords[0] = 2.4;
-    //dest_coords[1] = 2.4;
-    //moveToCoordinates(dest_coords);
-    /*while(ros::ok()) {
-        msg.angular.z = 0.35;
-        pub.publish(msg);
-        ros::spinOnce();
-        loop_rate.sleep();
-    }*/
-        return 0;
+    return 0;
 }
