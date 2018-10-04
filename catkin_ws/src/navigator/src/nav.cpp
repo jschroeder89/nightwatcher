@@ -55,13 +55,16 @@
 #define quadrant_III 3
 #define quadrant_VI 4
 #define angle_error_per_sec 0.002
-#define angular_error_per_degree 0.094
+#define angular_error_after_failed_rescue 38
 
 /*ros::Publisher*/
 ros::Publisher pub;
 
 /*YAML::Emitter*/
 YAML::Emitter out;
+
+// NOTE Zielpfad der .yaml-Datei, Bitte vor dem Testen ändern!
+std::string yaml_path = "/homes/joschroeder/explored_beacons.yaml"; 
 
 struct beacon {
     int id;
@@ -71,8 +74,16 @@ struct beacon {
 
 beacon beacon_array[7];
 
-// NOTE Zielpfad der .yaml-Datei, Bitte vor dem Testen ändern!
-std::string yaml_path = "/homes/joschroeder/route.yaml"; 
+/*Beacon vectors*/
+std::vector<double> base;
+std::vector<double> beacon_0;
+std::vector<double> beacon_1;
+std::vector<double> beacon_2;
+std::vector<double> beacon_3;
+std::vector<double> beacon_4;
+std::vector<double> beacon_5;
+std::vector<std::vector<double> > beacon_vector;
+
 
 /*Global Struct*/
 struct roboData {
@@ -92,6 +103,7 @@ struct roboData {
     double odometry_orientation_beacon_second_contact;
     double encoder_position_error_x = 0;
     double encoder_position_error_y = 0;
+    double angular_error_per_degree = 0.094;
 } data;
 
 /*Prototypes*/
@@ -109,24 +121,22 @@ bool proximityAllDetected();
 bool beaconBelow();
 void resetBeaconDetection();
 void appendBeaconArray();
-void printBeaconArray();    
-void appendYAML(beacon &b);
+void printBeaconArray();
+void appendYAML();
 void setAngularVelocity(double val);
 void setLinearVelocity(double val);
 void getInitPosition();
 void moveToCoordinates(double *dest_coords);
 void moveToCoordinatesEncoder(double *dest_coords);
 void rotateToDestination(double dest_angle, double actual_angle);
-void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped& msg);
-void odometryDataCallback(const nav_msgs::Odometry& msg);
-void beaconDetected(double dest_coords[]);
+void floorProximityCallback(const amiro_msgs::UInt16MultiArrayStamped &msg);
+void odometryDataCallback(const nav_msgs::Odometry &msg);
+void beaconDetection();
 void exploration();
 double rotateToDestinationEncoder(double dest_angle, double actual_angle);
 double adjustOrientationForDestination(double dest_coords[]);
 double adjustOrientationForDestinationEncoder(double dest_coords[]);
 double angleCorrection(double dest_angle, double actual_angle);
-inline double calculateAngle(double x_coord, double y_coord);
-
 
 void getInitPosition() {
     bool read_init_positions = false;
@@ -422,7 +432,7 @@ double rotateToDestinationEncoder(double dest_angle, double actual_angle) {
     double deg_diff = 0;
     int q = 0;
     geometry_msgs::Twist msg;
-    double correction = dest_angle * angular_error_per_degree;
+    double correction = dest_angle * data.angular_error_per_degree;
     dest_angle = dest_angle + (correction * correction_direction); 
     ROS_INFO("correction: %f", correction);
     ROS_INFO("dest_angle_new: %f", dest_angle);
@@ -482,13 +492,6 @@ double rotateToDestinationEncoder(double dest_angle, double actual_angle) {
             pub.publish(msg);
             ros::spinOnce();
         } while(deg_diff > accuracyConstAngle);
-        //msg.angular.z = -(0.047 * correction) * deg2rad;
-        //start = ros::Time::now();
-        //do {
-        //    time_diff = ros::Time::now() - start;
-        //    pub.publish(msg);
-        //    ros::spinOnce();
-        //} while(time_diff < ref_duration_1);
         msg.angular.z = 0;
         pub.publish(msg);
     } else if(dest_quadrant == quadrant_I && actual_quadrant == quadrant_III) {
@@ -660,12 +663,13 @@ double rotateToDestinationEncoder(double dest_angle, double actual_angle) {
 void beaconDetectionTimeBased() {
     geometry_msgs::Twist msg;
     ros::Time start, end;
-    ros::Duration time_diff, first_contact, second_contact, half_arc, full_arc;
-    double half_arc_duration, full_arc_duration, arc_duration, dur;
+    ros::Duration time_diff, first_contact, second_contact;
+    double half_arc_duration, full_arc_duration, arc_duration;
     ros::Duration ref_duration_1(1.00);
     ros::Duration ref_duration_2(3.00);
     msg.linear.x = 0;
     pub.publish(msg);
+    ROS_INFO("BEACON DETECTED: %i", data.detecting_sensor_id);
     switch (data.detecting_sensor_id) {
         case FRONT_LEFT: {
             msg.linear.x = 0.05;
@@ -677,6 +681,7 @@ void beaconDetectionTimeBased() {
                 time_diff = ros::Time::now() - start;
             } while(time_diff < ref_duration_1);
             msg.linear.x = 0;
+            pub.publish(msg);
             msg.angular.z = slow_rotate_cw;
             do {
                 pub.publish(msg);
@@ -696,7 +701,6 @@ void beaconDetectionTimeBased() {
             half_arc_duration = full_arc_duration / 2 ;
             //ROS_INFO("half: %f", half_arc_duration);
             msg.angular.z = slow_rotate_cw;
-            pub.publish(msg);
             start = ros::Time::now();
             do {
                 pub.publish(msg);
@@ -704,12 +708,12 @@ void beaconDetectionTimeBased() {
                 arc_duration = ros::Time::now().toSec() - start.toSec();
             } while(arc_duration < half_arc_duration);
             msg.angular.z = 0;
-            msg.linear.x = -0.02;
             pub.publish(msg);
+            msg.linear.x = -0.02;
             do {
                 pub.publish(msg);
                 ros::spinOnce();
-            } while(proximityFrontLeftDetected() && proximityFrontLeftDetected());
+            } while(proximityFrontLeftDetected() && proximityFrontRightDetected());
             msg.linear.x = 0;
             pub.publish(msg);
             msg.linear.x = 0.035;
@@ -721,7 +725,17 @@ void beaconDetectionTimeBased() {
             } while(time_diff < ref_duration_2);
             msg.linear.x = 0;
             pub.publish(msg);
+            if(proximityFrontRightBlack() || proximityFrontLeftBlack()) {
+                msg.angular.z = slow_rotate_ccw;
+                start = ros::Time::now();
+                do {
+                    pub.publish(msg);
+                    ros::spinOnce();
+                    time_diff = ros::Time::now() - start;
+                } while(time_diff < ref_duration_2);
+            } 
             msg.angular.z = super_slow_rotate_ccw;
+            start = ros::Time::now();
             do {
                 pub.publish(msg);
                 ros::spinOnce();
@@ -729,7 +743,6 @@ void beaconDetectionTimeBased() {
             msg.angular.z = 0;
             pub.publish(msg);
             msg.angular.z = mega_slow_rotate_ccw;
-            pub.publish(msg);
             start = ros::Time::now();
             do {
                 pub.publish(msg);
@@ -738,21 +751,298 @@ void beaconDetectionTimeBased() {
             full_arc_duration = ros::Time::now().toSec() - start.toSec();
             half_arc_duration = full_arc_duration / 2;
             msg.angular.z = 0;
-            msg.angular.z = mega_slow_rotate_cw;
             pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_cw;
             start = ros::Time::now();
             do {
                 pub.publish(msg);
                 ros::spinOnce();
                 arc_duration = ros::Time::now().toSec() - start.toSec();
-            }while(arc_duration < half_arc_duration);
+            }while(arc_duration < (half_arc_duration - 1.00));
+            msg.angular.z = 0;
+            pub.publish(msg);
+            appendBeaconArray();
+            break;
+        }
+        case FRONT_RIGHT: {
+            msg.linear.x = 0.05;
+            pub.publish(msg);
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_1);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_ccw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontRightDetected());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            msg.angular.z = 0;
+            pub.publish(msg);
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular.z = slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while(arc_duration < half_arc_duration);
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.linear.x = -0.02;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected() && proximityFrontRightDetected());
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.linear.x = 0.035;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_2);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            if(proximityFrontRightBlack() || proximityFrontLeftBlack()) {
+                msg.angular.z = slow_rotate_ccw;
+                start = ros::Time::now();
+                do {
+                    pub.publish(msg);
+                    ros::spinOnce();
+                    time_diff = ros::Time::now() - start;
+                } while(time_diff < ref_duration_2);
+            } 
+            msg.angular.z = super_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontLeftBlack());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftBlack());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular. z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while(arc_duration < (half_arc_duration - 1.00));
+            msg.angular.z = 0;
+            pub.publish(msg);
+            appendBeaconArray();
+            break;
+        }
+        case SIDE_LEFT: {
+            msg.linear.x = 0.05;
+            pub.publish(msg);
+            msg.angular.z = 0.5;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_1);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_ccw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontRightDetected());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            msg.angular.z = 0;
+            pub.publish(msg);
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular.z = slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while(arc_duration < half_arc_duration);
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.linear.x = -0.02;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected() && proximityFrontRightDetected());
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.linear.x = 0.035;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_2);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            if(proximityFrontRightBlack() || proximityFrontLeftBlack()) {
+                msg.angular.z = slow_rotate_ccw;
+                start = ros::Time::now();
+                do {
+                    pub.publish(msg);
+                    ros::spinOnce();
+                    time_diff = ros::Time::now() - start;
+                } while(time_diff < ref_duration_2);
+            } 
+            msg.angular.z = super_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontLeftBlack());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftBlack());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular. z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while((arc_duration) < (half_arc_duration - 1.00));
+            msg.angular.z = 0;
+            pub.publish(msg);
+            appendBeaconArray();
+            break;
+        }
+        case SIDE_RIGHT: {
+            msg.linear.x = 0.05;
+            pub.publish(msg);
+            msg.angular.z = -0.5;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_1);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_cw;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontRightDetected());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            msg.angular.z = 0;
+            pub.publish(msg);
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular.z = slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while(arc_duration < half_arc_duration);
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.linear.x = -0.02;
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftDetected() && proximityFrontRightDetected());
+            msg.linear.x = 0;
+            pub.publish(msg);
+            msg.linear.x = 0.035;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                time_diff = ros::Time::now() - start;
+            } while(time_diff < ref_duration_2);
+            msg.linear.x = 0;
+            pub.publish(msg);
+            if(proximityFrontRightBlack() || proximityFrontLeftBlack()) {
+                msg.angular.z = slow_rotate_ccw;
+                start = ros::Time::now();
+                do {
+                    pub.publish(msg);
+                    ros::spinOnce();
+                    time_diff = ros::Time::now() - start;
+                } while(time_diff < ref_duration_2);
+            } 
+            msg.angular.z = super_slow_rotate_cw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(!proximityFrontLeftBlack());
+            msg.angular.z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+            } while(proximityFrontLeftBlack());
+            full_arc_duration = ros::Time::now().toSec() - start.toSec();
+            half_arc_duration = full_arc_duration / 2;
+            msg.angular. z = 0;
+            pub.publish(msg);
+            msg.angular.z = mega_slow_rotate_ccw;
+            start = ros::Time::now();
+            do {
+                pub.publish(msg);
+                ros::spinOnce();
+                arc_duration = ros::Time::now().toSec() - start.toSec();
+            } while(arc_duration < (half_arc_duration - 1.00));
             msg.angular.z = 0;
             pub.publish(msg);
             appendBeaconArray();
             break;
         }
     }
-
 }
 
 double adjustOrientationForDestination(double dest_coords[]) {
@@ -803,7 +1093,7 @@ void moveToCoordinates(double *dest_coords) {
         //msg.angular.z = angleCorrection(dest_angle, data.odometry_orientation_deg);
         
         if(beaconBelow() && !scannedBeacon()) {
-            beaconDetected(dest_coords);
+            beaconDetectionTimeBased();
             appendBeaconArray();
             break;
             adjustOrientationForDestination(dest_coords);
@@ -1072,7 +1362,7 @@ bool proximityAllDetected() {
         data.proximity_floor_values[SIDE_RIGHT] < beacon_threshold) return true; else return false;
 }
 
-void beaconDetected(double dest_coords[]) {
+void beaconDetection() {
     geometry_msgs::Twist msg;
     double orientation_diff, orientation_diff_half, orientation_new, deg_diff;
     int first_quadrant, second_quadrant, final_quadrant, q;
@@ -1516,7 +1806,6 @@ void beaconDetected(double dest_coords[]) {
                 } else {
                     do {
                         deg_diff = orientation_new - data.odometry_orientation_deg;
-                        //ROS_INFO("deg_diff: %f", deg_diff);
                         pub.publish(msg);
                         ros::spinOnce();
                     } while(deg_diff > accuracyConstAngle);
@@ -1621,6 +1910,71 @@ double adjustOrientationForDestinationEncoder(double dest_coords[]) {
     return dest_angle;
 }
 
+void rescueMode() {
+    geometry_msgs::Twist msg;
+    ros::Duration time_diff;
+    ros::Duration ref_duration(3.00);
+    ros::Time start;
+    double vel = 0.06;
+    double rescue_rotate_ccw = 0.15;
+    int counter = 0;
+    msg.linear.x = vel;
+    do {
+        start = ros::Time::now();
+        do {
+            pub.publish(msg);
+            ros::spinOnce();
+            if(beaconBelow() && !scannedBeacon()) {
+                beaconDetectionTimeBased();
+                return;
+            }
+            time_diff = ros::Time::now() - start;
+        } while(time_diff < ref_duration);
+        if(beaconBelow() && !scannedBeacon()) {
+            beaconDetectionTimeBased();
+            return;
+        } 
+        msg.linear.x = -vel;
+        start = ros::Time::now();
+        do {
+            pub.publish(msg);
+            ros::spinOnce();
+            if(beaconBelow() && !scannedBeacon()) {
+                beaconDetectionTimeBased();
+                return;
+            } 
+            time_diff = ros::Time::now() - start;
+        } while(time_diff < ref_duration);
+        if(beaconBelow() && !scannedBeacon()) {
+            beaconDetectionTimeBased();
+            return;
+        } 
+        msg.linear.x = 0;
+        msg.angular.z = rescue_rotate_ccw;
+        start = ros::Time::now();
+        do {
+            pub.publish(msg);
+            ros::spinOnce();
+            if(beaconBelow() && !scannedBeacon()) {
+                beaconDetectionTimeBased();
+                return;
+            }
+            time_diff = ros::Time::now() - start;
+        } while(time_diff < ref_duration);
+        if(beaconBelow() && !scannedBeacon()) {
+            beaconDetectionTimeBased();
+            return;
+        } 
+        msg.linear.x = vel;
+        msg.angular.z = 0;
+        counter++;
+    } while(counter < 16);
+}
+
+void calculateError() {
+
+}
+
 void moveToCoordinatesEncoder(double *dest_coords) {
     geometry_msgs::Twist msg;
     ros::Duration time_diff;
@@ -1629,38 +1983,45 @@ void moveToCoordinatesEncoder(double *dest_coords) {
     double acc_x = 0;
     double acc_y = 0;
     double acc_pos = 0;
-    double offset_route_0 = 2.5;
-    double error = 0.002;
-    dest_coords[X_COORD] = dest_coords[X_COORD] - offset_route_0;
-    dest_coords[Y_COORD] = dest_coords[Y_COORD] - offset_route_0;
+    double offset_route_0 = 2.5; // NOTE Please adjust according to each Map! 
+    dest_coords[X_COORD] = dest_coords[X_COORD] - offset_route_0 + data.encoder_position_error_x;
+    dest_coords[Y_COORD] = dest_coords[Y_COORD] - offset_route_0 + data.encoder_position_error_y;
     double dest_angle = adjustOrientationForDestinationEncoder(dest_coords);
     ROS_INFO("dest_angle for correction: %f", dest_angle);
     msg.linear.x = 0.075;
     do {
-        acc_x = std::fabs(dest_coords[X_COORD] - (data.odometry_positions_encoder[X_COORD]));
-        acc_y = std::fabs(dest_coords[Y_COORD] - (data.odometry_positions_encoder[Y_COORD]));
-        acc_pos = (acc_x + acc_y) / 2;
+        //acc_x = std::fabs(dest_coords[X_COORD] - (data.odometry_positions_encoder[X_COORD]));
+        //acc_y = std::fabs(dest_coords[Y_COORD] - (data.odometry_positions_encoder[Y_COORD]));
+        //acc_pos = (acc_x + acc_y) / 2;
+        acc_x = dest_coords[X_COORD] - data.odometry_positions_encoder[X_COORD];
+        acc_y = dest_coords[Y_COORD] - data.odometry_positions_encoder[Y_COORD];
+        acc_pos = sqrt(pow(acc_x, 2) + pow(acc_y, 2));
+        ROS_INFO("acc_pos: %f", acc_pos);
         msg.angular.z = angleCorrection(dest_angle, data.odometry_orientation_deg_encoder);
-        //msg.angular.z = 0.05;
-        if (beaconBelow() && !scannedBeacon())
-        {
+        if (beaconBelow() && !scannedBeacon() && acc_pos > 0.1) {
             beaconDetectionTimeBased();
             appendBeaconArray();
             break;
-            adjustOrientationForDestinationEncoder(dest_coords);
-            msg.linear.x = 0.075;
-            start = ros::Time::now();
-            do
-            {
-                pub.publish(msg);
-                ros::spinOnce();
-                time_diff = ros::Time::now() - start;
-            } while (time_diff < safety_duration);
-            continue;
+            //adjustOrientationForDestinationEncoder(dest_coords);
+            //msg.linear.x = 0.075;
+            //start = ros::Time::now();
+            //do
+            //{
+            //    pub.publish(msg);
+            //    ros::spinOnce();
+            //    time_diff = ros::Time::now() - start;
+            //} while (time_diff < safety_duration);
+            //continue;
+        } else if(!beaconBelow() && !scannedBeacon() && acc_pos < 0.1){
+            msg.linear.x = 0;
+            pub.publish(msg);
+            rescueMode();
+            appendBeaconArray();
+            break;
         }
         ros::spinOnce();
         pub.publish(msg);
-        if (acc_pos < accuracyConstPosition) break; 
+        //if (acc_pos < accuracyConstPosition) break; 
     } while(true);
     ros::spinOnce();
     msg.linear.x = 0;
@@ -1669,19 +2030,22 @@ void moveToCoordinatesEncoder(double *dest_coords) {
 }
 
 void exploreMap() {
-    ros::Duration(3.0).sleep();
     getInitPosition();
     scanBaseBeacon();
     scannedBeacon();
-    exploration();
+    //double dest_coords_1[2] = {2.5, 2.6};
+    //moveToCoordinates(dest_coords_1);
+    //double dest_coords_2[2] = {4, 2.6};
+    //moveToCoordinates(dest_coords_2);
+    //exploration();
 }
 
 void beaconNavigation() {
-    //ros::Duration(3.0).sleep();
-    //scanBaseBeacon();
-    //scannedBeacon();
-    double dest_coords_1[2] = {2.5, 2.0};
+    scanBaseBeacon();
+    scannedBeacon();
+    double dest_coords_1[2] = {3.1, 3.0};
     moveToCoordinatesEncoder(dest_coords_1);
+    //rescueMode();
     //double dest_coords_2[2] = {3, 3};
     //moveToCoordinatesEncoder(dest_coords_2);
     //double dest_coords_3[2] = {2.5, 3};
@@ -1702,11 +2066,34 @@ main(int argc, char **argv) {
     ros::Rate loop_rate(50);
     geometry_msgs::Twist msg;
     std::string topic_out, topic_in_suffix, topic_in_prefix;
+    std::string beacon_part_1 = "/watchmen_";
+    std::string beacon_part_2 = "route_0";
+    std::string beacon_part_3_base = "/base";
+    std::string beacon_part_3_beacon = "/beacon_";
+    std::string beacon_part_4 = "/pose2d";
+
+    // NOTE change routes here!
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_base, base); 
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "0" + beacon_part_4, beacon_0);
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "1" + beacon_part_4, beacon_1);
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "2" + beacon_part_4, beacon_2);
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "3" + beacon_part_4, beacon_3);
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "4" + beacon_part_4, beacon_4);
+    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "5" + beacon_part_4, beacon_5);
+
+    beacon_vector.push_back(base);
+    beacon_vector.push_back(beacon_0);
+    beacon_vector.push_back(beacon_1);
+    beacon_vector.push_back(beacon_2);
+    beacon_vector.push_back(beacon_3);
+    beacon_vector.push_back(beacon_4);
+    beacon_vector.push_back(beacon_5);
 
     n.param<std::string>("topic_in_suffix", topic_in_suffix, "/amiro1/proximity_floor_");
     n.param<std::string>("topic_in_prefix", topic_in_prefix, "/image_raw");
     n.param<std::string>("topic_out", topic_out, "/amiro1/proximity_floor/values");
 
+    
     typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image,sensor_msgs::Image,sensor_msgs::Image,sensor_msgs::Image> syncPolicy;
 
     message_filters::Subscriber<sensor_msgs::Image> sub0(n, topic_in_suffix + "0" + topic_in_prefix, 1);
@@ -1717,17 +2104,9 @@ main(int argc, char **argv) {
     message_filters::Synchronizer<syncPolicy> sync(syncPolicy(10), sub0, sub1, sub2, sub3);
     sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
     
-    
-    getInitPosition();
-    //exploreMap(); //NOTE Use World Odometry 
     ros::Duration(3.0).sleep();
-    scanBaseBeacon();
-    scannedBeacon();
-    beaconNavigation(); //NOTE Use Encoder Odometry
-    //double dest_coords[2] = {3, 2.50};
-    //moveToCoordinates(dest_coords);
-    //dest_coords[0] = 4;
-    //dest_coords[1] = 2.57;
-    //moveToCoordinates(dest_coords);
+    ROS_INFO("BBBBBBBBBBBBBBBBBBBBBBBBBBBB : %f", beacon_vector[0][1]);
+    //exploreMap(); //NOTE Use World Odometry 
+    //beaconNavigation(); //NOTE Use Encoder Odometry
     return 0;
 }
