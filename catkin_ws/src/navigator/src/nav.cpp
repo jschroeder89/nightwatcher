@@ -4,6 +4,7 @@
 #include "nav_msgs/Odometry.h"
 #include <amiro_msgs/UInt16MultiArrayStamped.h>
 #include "std_msgs/UInt16MultiArray.h"
+#include "std_msgs/UInt8MultiArray.h"
 #include <tf/tf.h>
 #include <math.h>
 #include "sensor_msgs/Image.h"
@@ -20,6 +21,13 @@
 #define X_COORD 0
 #define Y_COORD 1
 #define THETA 2
+#define BASE 0 
+#define BEACON_0 1
+#define BEACON_1 2
+#define BEACON_2 3
+#define BEACON_3 4
+#define BEACON_4 5
+#define BEACON_5 6
 #define X_COORD_MID_MAP 2.50
 #define Y_COORD_MID_MAP 2.50
 #define accuracyConstPosition 0.0075
@@ -75,13 +83,6 @@ struct beacon {
 beacon beacon_array[7];
 
 /*Beacon vectors*/
-std::vector<double> base;
-std::vector<double> beacon_0;
-std::vector<double> beacon_1;
-std::vector<double> beacon_2;
-std::vector<double> beacon_3;
-std::vector<double> beacon_4;
-std::vector<double> beacon_5;
 std::vector<std::vector<double> > beacon_vector;
 
 
@@ -104,6 +105,7 @@ struct roboData {
     double encoder_position_error_x = 0;
     double encoder_position_error_y = 0;
     double angular_error_per_degree = 0.094;
+    int shortest_path_order[7];
 } data;
 
 /*Prototypes*/
@@ -1131,6 +1133,14 @@ bool beaconBelow() {
     else return false;
 }
 
+void shortestPathCallback(const std_msgs::UInt8MultiArray& msg) {
+    for(int i = 0; i <= 7; i++) {
+        data.shortest_path_order[i] = msg.data[i];
+        ROS_INFO("shorttttttttttttttttttty: %i", data.shortest_path_order[i]);
+    }
+    return;
+}
+
 void floorProximityCallback(const sensor_msgs::Image::ConstPtr msg0,
               const sensor_msgs::Image::ConstPtr msg1,
               const sensor_msgs::Image::ConstPtr msg2,
@@ -2063,24 +2073,27 @@ main(int argc, char **argv) {
     ros::NodeHandle n;
     pub = n.advertise<geometry_msgs::Twist>("amiro1/cmd_vel", 1);
     ros::Subscriber odometry_sub = n.subscribe("amiro1/odom", 1, odometryDataCallback);
+    ros::Subscriber shortest_path_sub = n.subscribe("shortest_path", 1, shortestPathCallback);
     ros::Rate loop_rate(50);
     geometry_msgs::Twist msg;
     std::string topic_out, topic_in_suffix, topic_in_prefix;
-    std::string beacon_part_1 = "/watchmen_";
-    std::string beacon_part_2 = "route_0";
-    std::string beacon_part_3_base = "/base";
-    std::string beacon_part_3_beacon = "/beacon_";
-    std::string beacon_part_4 = "/pose2d";
+    std::vector<double> base;
+    std::vector<double> beacon_0;
+    std::vector<double> beacon_1;
+    std::vector<double> beacon_2;
+    std::vector<double> beacon_3;
+    std::vector<double> beacon_4;
+    std::vector<double> beacon_5;
 
     // NOTE change routes here!
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_base, base); 
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "0" + beacon_part_4, beacon_0);
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "1" + beacon_part_4, beacon_1);
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "2" + beacon_part_4, beacon_2);
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "3" + beacon_part_4, beacon_3);
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "4" + beacon_part_4, beacon_4);
-    n.getParam(beacon_part_1 + beacon_part_2 + beacon_part_3_beacon + "5" + beacon_part_4, beacon_5);
-
+    n.getParam("/watchmen_route_0/base/pose2d", base);
+    n.getParam("/watchmen_route_0/beacon_0/pose2d", beacon_0);
+    n.getParam("/watchmen_route_0/beacon_1/pose2d", beacon_1);
+    n.getParam("/watchmen_route_0/beacon_2/pose2d", beacon_2);
+    n.getParam("/watchmen_route_0/beacon_3/pose2d", beacon_3);
+    n.getParam("/watchmen_route_0/beacon_4/pose2d", beacon_4);
+    n.getParam("/watchmen_route_0/beacon_5/pose2d", beacon_5);
+    
     beacon_vector.push_back(base);
     beacon_vector.push_back(beacon_0);
     beacon_vector.push_back(beacon_1);
@@ -2105,7 +2118,6 @@ main(int argc, char **argv) {
     sync.registerCallback(boost::bind(&floorProximityCallback, _1, _2, _3, _4));
     
     ros::Duration(3.0).sleep();
-    ROS_INFO("BBBBBBBBBBBBBBBBBBBBBBBBBBBB : %f", beacon_vector[0][1]);
     //exploreMap(); //NOTE Use World Odometry 
     //beaconNavigation(); //NOTE Use Encoder Odometry
     return 0;
