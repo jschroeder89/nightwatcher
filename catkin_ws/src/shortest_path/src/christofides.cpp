@@ -6,10 +6,11 @@
 #include <algorithm>
 #include <iterator>
 #include "std_msgs/UInt8MultiArray.h"
+#include "yaml-cpp/yaml.h"
 using namespace std;
 
 #include <sys/time.h>
-
+ros::Publisher pub;
 std_msgs::UInt8MultiArray beacon_order;
 // Boruvka's algorithm to find Minimum Spanning
 // Tree of a given connected, undirected and
@@ -452,13 +453,21 @@ int detMST(float_t* inTree, int bc)
 		tourLength += inTree2d[finalTour[i-1]][finalTour[i]];
 	}
 	cout << "Length of tour after improvement: " << tourLength << endl;
-	
+	beacon_order.data.push_back(0);
 	cout << "Final tour: 0";
 	for(int i = 1; i < graph->V+1; i++){
 		cout << "-" << finalTour[i];
-		beacon_order.data.push_back(finalTour[i]);
+		beacon_order.data.push_back(finalTour[i]);	
 	}
 	beacon_order.data.push_back(0);
+	YAML::Node shortest_path;
+	YAML::Emitter out;
+	finalTour[0] = 0;
+	//out << "shortest_path";
+	out << YAML::Flow;
+	out << YAML::BeginSeq << finalTour[0] << finalTour[1] << finalTour[2] << finalTour[3] << finalTour[4] << finalTour[5] << finalTour[6] << finalTour[7] << YAML::EndSeq;
+	ofstream fout("shortest_path.yaml");
+	fout << out.c_str();
 	cout << endl;
 	
     return 0;
@@ -632,14 +641,18 @@ int isNumber(char in){
 		}
 }
 
+//void callback(const std_msgs::UInt8MultiArray& msg) {
+//	ROS_INFO("test: %i", msg.data[2]);
+//}
+
 int main(int argc, char **argv) {
 	//Measure the time the algorithm takes
 	beacon_order.data.clear();
-	beacon_order.data.push_back(0);
 	ros::init(argc, argv, "shortest_path");
 	ros::NodeHandle n;
-	ros::Publisher shortest_beacon_path = n.advertise<std_msgs::UInt8MultiArray>("shortest_path", 1);
-	ros::Rate loop_rate(50);
+	pub = n.advertise<std_msgs::UInt8MultiArray>("shortest_path", 100);
+	//ros::Subscriber sub = n.subscribe("shortest_path", 100, callback);
+	ros::Rate loop_rate(1);
 
 	timeval start, end;
 	gettimeofday(&start, 0);
@@ -774,11 +787,17 @@ int main(int argc, char **argv) {
         ros::spinOnce();
         loop_rate.sleep();
     }
-    */	
-   	for(int i = 0; i <= 7; i++) {
-		ROS_INFO("beacon_order[%i]: %i",i, beacon_order.data[i]);
-	}
-    return 0;
+    */
+   	
+		//pub.publish(beacon_order);
+		//ros::spinOnce();
+		//for(int i = 0; i <= 7; i++) {
+		//	ROS_INFO("beacon_order[%i]: %i",i, beacon_order.data[i]);
+		//}
+		//loop_rate.sleep();
+
+		
+		return 0;
 }
 
 
