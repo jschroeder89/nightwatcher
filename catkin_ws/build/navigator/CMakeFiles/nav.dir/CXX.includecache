@@ -39,6 +39,8 @@ amiro_msgs/UInt16MultiArrayStamped.h
 -
 std_msgs/UInt16MultiArray.h
 /homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator/src/std_msgs/UInt16MultiArray.h
+std_msgs/UInt8MultiArray.h
+/homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator/src/std_msgs/UInt8MultiArray.h
 tf/tf.h
 -
 math.h
@@ -50,6 +52,10 @@ message_filters/subscriber.h
 message_filters/synchronizer.h
 -
 message_filters/sync_policies/approximate_time.h
+-
+yaml-cpp/yaml.h
+/homes/joschroeder/github/nightwatcher/catkin_ws/src/navigator/src/yaml-cpp/yaml.h
+fstream
 -
 
 /opt/ros/kinetic/include/geometry_msgs/Point.h
@@ -1223,6 +1229,24 @@ ros/message_operations.h
 -
 
 /opt/ros/kinetic/include/std_msgs/UInt16MultiArray.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+std_msgs/MultiArrayLayout.h
+-
+
+/opt/ros/kinetic/include/std_msgs/UInt8MultiArray.h
 string
 -
 vector

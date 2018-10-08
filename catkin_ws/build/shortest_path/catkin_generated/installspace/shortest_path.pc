@@ -1,0 +1,8 @@
+prefix=/homes/joschroeder/github/nightwatcher/catkin_ws/install
+
+Name: shortest_path
+Description: Description of shortest_path
+Version: 0.0.0
+Cflags: 
+Libs: -L/homes/joschroeder/github/nightwatcher/catkin_ws/install/lib 
+Requires: 

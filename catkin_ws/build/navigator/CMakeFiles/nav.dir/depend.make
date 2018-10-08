@@ -89,6 +89,7 @@ navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/std_msgs/Mu
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/std_msgs/MultiArrayLayout.h
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/std_msgs/String.h
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/std_msgs/UInt16MultiArray.h
+navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/std_msgs/UInt8MultiArray.h
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/tf/LinearMath/Matrix3x3.h
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/tf/LinearMath/MinMax.h
 navigator/CMakeFiles/nav.dir/src/nav.cpp.o: /opt/ros/kinetic/include/tf/LinearMath/QuadWord.h
